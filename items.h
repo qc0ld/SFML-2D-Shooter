@@ -1,8 +1,8 @@
 #ifndef ITEMS_H
 #define ITEMS_H
 
-#define CAPACITY 10
-
+#include <SFML/Graphics.hpp>
+#include "cmath"
 
 class Item {
 protected:

@@ -1,40 +1,44 @@
-
-#include <SFML/Graphics.hpp>
-#include "unit.h"
-#include "map.h"
 #include "game.h"
+#include "test.h"
 
 
 using namespace sf;
 
 int main() {
-    RenderWindow window(VideoMode(1280, 720), "Leha");
+    int number =  0;
+   // cin >> number;
+    if (number == 1){
+        gtest_main();
+        return 0;
+    }
+    RenderWindow window(VideoMode(1280, 720), "Game");
     Event event;
-    View view;
-
-
-    Unit player;
-    Map map;
+    Game game;
     while (window.isOpen()) {
         while (window.pollEvent(event)) {
             if (event.type == Event::Closed) {
                 window.close();
             }
         }
-        window.clear();
 
-        view.setCenter(player.position.x + 8, player.position.y + 8);
-        view.setSize(320, 180);
-        window.setView(view);
+        game.update_view(window);
 
-        map.draw(window);
-
-
-        player.update(window, map);
-
-        player.draw(window);
-        window.display();
+        if (Keyboard::isKeyPressed(Keyboard::A) || Keyboard::isKeyPressed(Keyboard::Left)) {
+            game.map.update_player(1);
+        } else if (Keyboard::isKeyPressed(Keyboard::W) || Keyboard::isKeyPressed(Keyboard::Up)) {
+            game.map.update_player(2);
+        } else if (Keyboard::isKeyPressed(Keyboard::D) || Keyboard::isKeyPressed(Keyboard::Right)) {
+            game.map.update_player(3);
+        } else if (Keyboard::isKeyPressed(Keyboard::S) || Keyboard::isKeyPressed(Keyboard::Down)) {
+            game.map.update_player(4);
+        }
+        if (Keyboard::isKeyPressed(Keyboard::Space)) {
+            game.map.bullet.set_up(window, game.map.player.position.x, game.map.player.position.y);
+        }
+        game.update();
+        game.draw(window);
 
     }
+
     return 0;
 }
