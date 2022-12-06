@@ -6,7 +6,7 @@ using namespace sf;
 
 int main() {
     int number =  0;
-   // cin >> number;
+    //cin >> number;
     if (number == 1){
         gtest_main();
         return 0;
@@ -24,16 +24,16 @@ int main() {
         game.update_view(window);
 
         if (Keyboard::isKeyPressed(Keyboard::A) || Keyboard::isKeyPressed(Keyboard::Left)) {
-            game.map.update_player(1);
+            game.update_player(1);
         } else if (Keyboard::isKeyPressed(Keyboard::W) || Keyboard::isKeyPressed(Keyboard::Up)) {
-            game.map.update_player(2);
+            game.update_player(2);
         } else if (Keyboard::isKeyPressed(Keyboard::D) || Keyboard::isKeyPressed(Keyboard::Right)) {
-            game.map.update_player(3);
+            game.update_player(3);
         } else if (Keyboard::isKeyPressed(Keyboard::S) || Keyboard::isKeyPressed(Keyboard::Down)) {
-            game.map.update_player(4);
+            game.update_player(4);
         }
         if (Keyboard::isKeyPressed(Keyboard::Space)) {
-            game.map.bullet.set_up(window, game.map.player.position.x, game.map.player.position.y);
+            game.bullet.set_up(window, game.player.position.x, game.player.position.y);
         }
         game.update();
         game.draw(window);

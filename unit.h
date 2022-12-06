@@ -16,7 +16,7 @@ public:
     int size;
     int direction;
     Item *inventory[10];
-    Weapon *curent_item;
+    Weapon* weapon;
     bool dead;
 
     Sprite sprite;
@@ -30,7 +30,7 @@ public:
 
     void draw(RenderWindow &window);
 
-    void pick_up_item(Item &item);
+    void set_weapon(Weapon *new_weapon);
 
     void set_current_item(int number);
 

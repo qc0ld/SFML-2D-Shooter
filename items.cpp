@@ -1,19 +1,12 @@
 #include "items.h"
 
-/*
-ak47::ak47() {
-    damage = 32;
-    rate_of_fire = 10;
+
+void Item::set_position(double x, double y) {
+    position.x = x;
+    position.y = y;
 }
 
-knife::knife() {
-    damage = 55;
-    rate_of_fire = 1;
+void Item::draw(RenderWindow &window) {
+    sprite.setPosition(position.x, position.y);
+    window.draw(sprite);
 }
-
-first_aid_kit::first_aid_kit() {
-    damage = -100;
-    rate_of_fire = 1;
-}
-
-*/

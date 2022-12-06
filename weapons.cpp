@@ -1,7 +1,23 @@
 #include "weapons.h"
 
 
+
+
+
+ak47::ak47() {
+    check = 0;
+    texture = new Texture;
+    texture->loadFromFile("Textures/Items/Weapons/ak47.png");
+    sprite.setTexture(*texture);
+}
+
+void ak47::attack() {
+    return;
+}
+
 Bullet::Bullet() {
+    position.x = 0;
+    position.y = 0;
     speed = 1;
     check = 0;
     damage = 33;

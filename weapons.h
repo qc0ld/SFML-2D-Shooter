@@ -2,26 +2,23 @@
 #define WEAPONS_H
 
 #include "items.h"
-#include "position.h"
 
 using namespace sf;
 
-class Weapon : Item {
+class Weapon : public Item {
 public:
-    Position position;
     double damage;
     double rate_of_fire;
-    Sprite sprite;
-    Texture texture;
 public:
-    void make_a_shot();
+
+    virtual void attack() = 0;
 };
 
 class ak47 : public Weapon {
 public:
     ak47();
 
-    void reload(Clip &clip);
+    void attack() override;
 };
 
 class Bullet {
@@ -37,8 +34,6 @@ public:
 
     Bullet();
 
-    void shoot(double x, double y);
-
     void update(RenderWindow &window);
 
     void set_up(RenderWindow &window, double x, double y);
@@ -51,9 +46,9 @@ public:
 };
 
 
-class knife : public Weapon {
+/*class knife : public Weapon {
 public:
     knife();
-};
+};*/
 
 #endif //WEAPONS_H

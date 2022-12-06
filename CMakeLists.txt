@@ -8,7 +8,7 @@ add_subdirectory(Google_test)
 include_directories(Google_test/googletest/include)
 include_directories(Google_test/googlemock/include)
 
-add_executable(lab4 main.cpp unit.cpp items.cpp map.cpp map.h game.h storage.cpp storage.h
+add_executable(lab4 main.cpp unit.cpp items.cpp game.h storage.cpp storage.h
         weapons.cpp weapons.h enemies.cpp enemies.h game.cpp position.h test.cpp test.h)
 include_directories(SFML/include)
 

@@ -1,5 +1,5 @@
 #include "test.h"
-#include "map.h"
+#include "game.h"
 
 TEST(Unit, constructor){
     Unit unit;
@@ -29,6 +29,18 @@ TEST(Unit, get_damage){
     Unit unit;
     unit.get_damage(33);
     EXPECT_EQ(unit.hp, 67);
+}
+
+TEST(Bullet, constructor){
+    Bullet bullet;
+    EXPECT_EQ(bullet.speed, 1);
+    EXPECT_EQ(bullet.check, 0);
+    EXPECT_EQ(bullet.damage, 33);
+}
+
+TEST(Bullet, moving){
+    Bullet bullet;
+    //bullet.se
 }
 
 int gtest_main() {

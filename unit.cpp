@@ -9,6 +9,7 @@ Unit::Unit() {
     position.x = 0;
     position.y = 0;
     speed = 0.2;
+    weapon = nullptr;
     texture = new sf::Texture;
     texture->loadFromFile("Textures/Units/Player.png");
     sprite.setTexture(*texture);
@@ -35,9 +36,13 @@ void Unit::set_position(double x, double y) {
 }
 
 void Unit::get_damage(double damage) {
-    if (hp - damage <= 0){
+    if (hp - damage <= 0) {
         dead = 1;
     } else {
         hp -= damage;
     }
+}
+
+void Unit::set_weapon(Weapon *new_weapon) {
+    weapon = new_weapon;
 }
