@@ -7,16 +7,13 @@
 #include "enemies.h"
 #include "weapons.h"
 #include "array"
+#include <list>
+#include <memory>
 
 using namespace sf;
 using namespace std;
 
-enum {
-    WALL,
-    EMPTY,
-    ENEMY,
-    PLAYER
-};
+
 
 
 class Cell {
@@ -48,13 +45,16 @@ class Game {
 public:
     int height;
     int width;
-    array<Shooter, 4> shooters;
+    int check;
+    vector<unique_ptr<Enemy>> enemies;
+    vector<shared_ptr<Item>> items;
     int enemy_amount;
     int item_amount;
     Unit player;
+    Item *clip;
     vector<vector<Cell>> map;
     Bullet bullet;
-    array<Item, 3> items;
+    list<Bullet> bullets;
     int level;
     View view;
 public:
@@ -66,6 +66,8 @@ public:
     void update_bullet();
 
     void update_player(int direction);
+
+    void update_weapons();
 
     void fill_vector();
 
@@ -81,11 +83,15 @@ public:
 
     int get_item(double x_pos, double y_pos);
 
-    int check_game();
+    void check_game();
 
     void update();
 
     void update_view(RenderWindow &window);
+
+    void pick_up_weapon();
+
+    void drop_weapon();
 };
 
 

@@ -1,4 +1,6 @@
 #include "items.h"
+#include "game.h"
+
 
 
 void Item::set_position(double x, double y) {

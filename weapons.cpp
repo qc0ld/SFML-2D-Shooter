@@ -2,18 +2,22 @@
 
 
 
-
-
-ak47::ak47() {
+ak47::ak47() : Weapon() {
     check = 0;
     texture = new Texture;
     texture->loadFromFile("Textures/Items/Weapons/ak47.png");
     sprite.setTexture(*texture);
 }
 
+
 void ak47::attack() {
     return;
 }
+
+void ak47::update(vector<vector<Cell>> &map) {
+    return;
+}
+
 
 Bullet::Bullet() {
     position.x = 0;

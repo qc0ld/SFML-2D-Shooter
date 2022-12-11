@@ -3,6 +3,7 @@
 
 #include "items.h"
 
+using namespace std;
 using namespace sf;
 
 class Weapon : public Item {
@@ -11,14 +12,26 @@ public:
     double rate_of_fire;
 public:
 
+
+    virtual void update(vector<vector<Cell>> &map) override = 0;
+
     virtual void attack() = 0;
+
+    int type() override { return WEAPON; }
+
+    virtual ~Weapon() {}
 };
+
 
 class ak47 : public Weapon {
 public:
     ak47();
 
+    void update(vector<vector<Cell>> &map) override;
+
     void attack() override;
+
+    ~ak47() override {}
 };
 
 class Bullet {
@@ -45,10 +58,5 @@ public:
     void move_y(double y);
 };
 
-
-/*class knife : public Weapon {
-public:
-    knife();
-};*/
 
 #endif //WEAPONS_H

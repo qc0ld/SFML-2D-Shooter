@@ -4,7 +4,7 @@
 using namespace std;
 
 
-Game::Game() : player(), bullet() {
+Game::Game() : player(), bullet(), enemies(), items() {
 
 
     vector<vector<char>> map_sketch = {
@@ -28,13 +28,13 @@ Game::Game() : player(), bullet() {
             {'#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'},
     };
     for (int i = 0; i < 4; i++) {
-        Shooter shooter;
-        shooters[i] = shooter;
+        enemies.push_back(make_unique<Shooter>());
+
     }
     for (int i = 0; i < 3; i++) {
-        ak47 ak47;
-        items[i] = ak47;
+        items.push_back(make_shared<ak47>());
     }
+    check = 0;
     level = 1;
     enemy_amount = 0;
     item_amount = 0;
@@ -42,6 +42,7 @@ Game::Game() : player(), bullet() {
     width = map_sketch[0].size();
     vector<vector<Cell>> a(height, vector<Cell>(width));
     map = a;
+
     for (int i = 0; i < height; ++i) {
         for (int k = 0; k < width; ++k) {
             if (map_sketch[i][k] == '#') {
@@ -51,11 +52,11 @@ Game::Game() : player(), bullet() {
                 Floor floor;
                 map[i][k] = floor;
                 if (map_sketch[i][k] == 'E') {
-                    shooters[enemy_amount++].set_position(i * 16, k * 16);
+                    enemies[enemy_amount++]->set_position(i * 16, k * 16);
                 } else if (map_sketch[i][k] == 'P') {
                     player.set_position(i * 16, k * 16);
                 } else if (map_sketch[i][k] == 'A') {
-                    items[item_amount++].set_position(i * 16, k * 16);
+                    items[item_amount++]->set_position(i * 16, k * 16);
                 }
             }
         }
@@ -72,11 +73,11 @@ void Game::draw_map(RenderWindow &window) {
 
 void Game::update_enemy() {
     for (int i = 0; i < 4; i++) {
-        if (shooters[i].dead == 1) {
+        if (enemies[i]->dead == 1) {
             enemy_amount--;
-            map[shooters[i].position.x / 16][shooters[i].position.y / 16].type = EMPTY;
+            map[enemies[i]->position.x / 16][enemies[i]->position.y / 16].type = EMPTY;
         } else {
-            map[shooters[i].position.x / 16][shooters[i].position.y / 16].type = ENEMY;
+            map[enemies[i]->position.x / 16][enemies[i]->position.y / 16].type = ENEMY;
         }
     }
 }
@@ -154,7 +155,7 @@ void Game::update_bullet() {
         }
         if (map[bullet.position.x / 16][bullet.position.y / 16].get_type() == ENEMY) {
             if (get_enemy(bullet.position.x, bullet.position.y) != 228) {
-                shooters[get_enemy(bullet.position.x, bullet.position.y)].get_damage(bullet.damage);
+                enemies[get_enemy(bullet.position.x, bullet.position.y)]->get_damage(bullet.damage);
             }
             bullet.check = 3;
         }
@@ -174,6 +175,7 @@ void Game::update_player(int direction) {
         player.move_y(player.speed);
     }
     player.direction = direction;
+
 }
 
 int Game::get_enemy(double x_pos, double y_pos) {
@@ -181,8 +183,8 @@ int Game::get_enemy(double x_pos, double y_pos) {
     int y = y_pos / 16;
     int x1, y1;
     for (int i = 0; i < 4; i++) {
-        x1 = shooters[i].position.x / 16;
-        y1 = shooters[i].position.y / 16;
+        x1 = enemies[i]->position.x / 16;
+        y1 = enemies[i]->position.y / 16;
         if (x1 == x && y1 == y) {
             return i;
         }
@@ -194,9 +196,9 @@ int Game::get_item(double x_pos, double y_pos) {
     int x = x_pos / 16;
     int y = y_pos / 16;
     int x1, y1;
-    for (int i = 0; i < 4; i++) {
-        x1 = items[i].position.x / 16;
-        y1 = items[i].position.y / 16;
+    for (int i = 0; i < 3; i++) {
+        x1 = items[i]->position.x / 16;
+        y1 = items[i]->position.y / 16;
         if (x1 == x && y1 == y) {
             return i;
         }
@@ -205,15 +207,25 @@ int Game::get_item(double x_pos, double y_pos) {
 }
 
 
-int Game::check_game() {
+
+void Game::update_weapons() {
+    for (int i = 0; i < 3; i++) {
+        if (items[i]->check == 1) {
+            items[i]->set_position(player.position.x + 4, player.position.y + 4);
+        }
+    }
+}
+
+
+void Game::check_game() {
     if (player.dead == 1) {
-        return 1;
+        check = 1;
     }
     if (enemy_amount == 0) {
-        return 2;
+        check = 2;
     }
-    return 0;
 }
+
 
 void Game::update_view(RenderWindow &window) {
     window.clear();
@@ -226,23 +238,32 @@ void Game::update_view(RenderWindow &window) {
 void Game::update() {
     update_enemy();
     update_bullet();
+    update_weapons();
+    check_game();
 }
 
 void Game::draw(RenderWindow &window) {
     draw_map(window);
     player.draw(window);
-    if (player.weapon) {
-        player.weapon->draw(window);
-    }
     for (int i = 0; i < 4; i++) {
-        shooters[i].draw(window);
+        enemies[i]->draw(window);
     }
-
     for (int i = 0; i < 3; i++) {
-        items[i].draw(window);
+        items[i]->draw(window);
     }
     bullet.draw(window);
     window.display();
 }
 
+void Game::pick_up_weapon() {
+    if (get_item(player.position.x, player.position.y) != 228) {
+        if (items[get_item(player.position.x, player.position.y)]->type() == WEAPON) {
+            items[get_item(player.position.x, player.position.y)]->check = 1;
+            player.set_weapon(items[get_item(player.position.x, player.position.y)]);
+        }
+    }
+}
 
+void Game::drop_weapon() {
+    player.drop_weapon();
+}

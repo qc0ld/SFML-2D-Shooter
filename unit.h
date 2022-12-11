@@ -5,8 +5,18 @@
 #include <cmath>
 #include "position.h"
 #include "weapons.h"
+#include <list>
+#include <memory>
+#include "vector"
 
 using namespace sf;
+using namespace std;
+
+
+
+class Cell;
+
+class Game;
 
 class Unit {
 public:
@@ -16,7 +26,7 @@ public:
     int size;
     int direction;
     Item *inventory[10];
-    Weapon* weapon;
+    shared_ptr<Item> weapon;
     bool dead;
 
     Sprite sprite;
@@ -30,7 +40,9 @@ public:
 
     void draw(RenderWindow &window);
 
-    void set_weapon(Weapon *new_weapon);
+    void set_weapon(shared_ptr<Item>(&new_weapon));
+
+    void drop_weapon();
 
     void set_current_item(int number);
 
@@ -43,6 +55,8 @@ public:
     Position get_position();
 
     int get_dirrection();
+
+    //   void attack();
 
 };
 

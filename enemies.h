@@ -5,7 +5,7 @@
 
 class Enemy : public Unit {
 public:
-    Enemy();
+    Enemy() : Unit() {}
 
     bool if_player_in_range(double x, double y);
 
@@ -16,6 +16,9 @@ public:
     virtual void attack_player() = 0;
 
     void get_to_storage(double x, double y);
+
+    virtual ~Enemy(){}
+
 };
 
 class Shooter : public Enemy {

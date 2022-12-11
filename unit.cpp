@@ -1,4 +1,5 @@
 #include "unit.h"
+#include "game.h"
 
 using namespace std;
 using namespace sf;
@@ -10,7 +11,7 @@ Unit::Unit() {
     position.y = 0;
     speed = 0.2;
     weapon = nullptr;
-    texture = new sf::Texture;
+    texture = new Texture;
     texture->loadFromFile("Textures/Units/Player.png");
     sprite.setTexture(*texture);
 }
@@ -43,6 +44,14 @@ void Unit::get_damage(double damage) {
     }
 }
 
-void Unit::set_weapon(Weapon *new_weapon) {
+void Unit::drop_weapon() {
+    if (weapon) {
+        weapon->check = 0;
+        weapon = nullptr;
+    }
+}
+
+void Unit::set_weapon(shared_ptr<Item>(&new_weapon)) {
     weapon = new_weapon;
 }
+

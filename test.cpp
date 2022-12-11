@@ -1,7 +1,8 @@
 #include "test.h"
 #include "game.h"
+#include "array.h"
 
-TEST(Unit, constructor){
+TEST(Unit, constructor) {
     Unit unit;
     EXPECT_EQ(unit.dead, 0);
     EXPECT_EQ(unit.hp, 100);
@@ -10,7 +11,7 @@ TEST(Unit, constructor){
     EXPECT_DOUBLE_EQ(unit.speed, 0.2);
 }
 
-TEST(Unit, moving){
+TEST(Unit, moving) {
     Unit unit;
     unit.set_position(40,50);
     EXPECT_EQ(unit.position.x, 40);
@@ -25,22 +26,36 @@ TEST(Unit, moving){
     EXPECT_DOUBLE_EQ(unit.position.y, 59.689998626708984);
 }
 
-TEST(Unit, get_damage){
+TEST(Unit, get_damage) {
     Unit unit;
     unit.get_damage(33);
     EXPECT_EQ(unit.hp, 67);
 }
 
-TEST(Bullet, constructor){
+TEST(Bullet, constructor) {
     Bullet bullet;
     EXPECT_EQ(bullet.speed, 1);
     EXPECT_EQ(bullet.check, 0);
     EXPECT_EQ(bullet.damage, 33);
 }
 
-TEST(Bullet, moving){
+TEST(Bullet, moving) {
     Bullet bullet;
-    //bullet.se
+    bullet.move_x(10);
+    bullet.move_y(50.4);
+    EXPECT_EQ(bullet.position.x, 10);
+    EXPECT_DOUBLE_EQ(bullet.position.y, 50.400001525878906);
+    bullet.move_x(-10.3);
+    bullet.move_y(-90);
+    EXPECT_DOUBLE_EQ(bullet.position.x, -0.30000001192092896);
+    EXPECT_DOUBLE_EQ(bullet.position.y, -39.599998474121094);
+}
+
+
+TEST(Array, constructor) {
+    my::Array<int, 5> array;
+    EXPECT_EQ(array.max_size(), 5);
+    EXPECT_EQ(array.size(), 0);
 }
 
 int gtest_main() {
