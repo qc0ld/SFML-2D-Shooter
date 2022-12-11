@@ -38,6 +38,7 @@ void Unit::set_position(double x, double y) {
 
 void Unit::get_damage(double damage) {
     if (hp - damage <= 0) {
+        drop_weapon();
         dead = 1;
     } else {
         hp -= damage;
@@ -51,7 +52,8 @@ void Unit::drop_weapon() {
     }
 }
 
-void Unit::set_weapon(shared_ptr<Item>(&new_weapon)) {
+void Unit::set_weapon(shared_ptr<Weapon>(&new_weapon)) {
     weapon = new_weapon;
+    weapon->check = 1;
 }
 

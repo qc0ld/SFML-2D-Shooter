@@ -4,7 +4,7 @@
 using namespace std;
 
 
-Game::Game() : player(), bullet(), enemies(), items() {
+Game::Game() : player(), bullet(), enemies(), items(), weapons() {
 
 
     vector<vector<char>> map_sketch = {
@@ -12,12 +12,12 @@ Game::Game() : player(), bullet(), enemies(), items() {
             {'#', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
             {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'E', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
             {'#', ' ', ' ', 'P', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
-            {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', '#', ' ', ' ', '#', '#', '#', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
-            {'#', ' ', ' ', ' ', ' ', 'A', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
+            {'#', ' ', ' ', 'A', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', '#', ' ', ' ', '#', '#', '#', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
+            {'#', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
             {'#', '#', ' ', ' ', ' ', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
             {'#', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', '#', '#', '#', '#', '#', '#', ' ', ' ', '#', '#', '#'},
             {'#', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
-            {'#', 'A', ' ', ' ', ' ', ' ', '#', ' ', 'A', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
+            {'#', ' ', ' ', ' ', ' ', ' ', '#', ' ', 'A', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
             {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'E', ' ', ' ', '#', '#', '#', '#', '#', '#', '#', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
             {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
             {'#', ' ', ' ', 'E', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
@@ -27,12 +27,13 @@ Game::Game() : player(), bullet(), enemies(), items() {
             {'#', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
             {'#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'},
     };
+    weapon_amount = 0;
+    for (int i = 0; i < 6; i++) {
+        weapons.push_back(make_shared<ak47>());
+        weapon_amount++;
+    }
     for (int i = 0; i < 4; i++) {
         enemies.push_back(make_unique<Shooter>());
-
-    }
-    for (int i = 0; i < 3; i++) {
-        items.push_back(make_shared<ak47>());
     }
     check = 0;
     level = 1;
@@ -52,15 +53,20 @@ Game::Game() : player(), bullet(), enemies(), items() {
                 Floor floor;
                 map[i][k] = floor;
                 if (map_sketch[i][k] == 'E') {
-                    enemies[enemy_amount++]->set_position(i * 16, k * 16);
+                    weapons.push_back(make_shared<ak47>());
+                    enemies[enemy_amount]->set_position(i * 16, k * 16);
+                    enemies[enemy_amount]->set_weapon(weapons[enemy_amount]);
+                    enemy_amount++;
                 } else if (map_sketch[i][k] == 'P') {
                     player.set_position(i * 16, k * 16);
                 } else if (map_sketch[i][k] == 'A') {
-                    items[item_amount++]->set_position(i * 16, k * 16);
+                    weapons[--weapon_amount]->set_position(i * 16, k * 16);
                 }
             }
         }
     }
+
+
 }
 
 void Game::draw_map(RenderWindow &window) {
@@ -71,10 +77,18 @@ void Game::draw_map(RenderWindow &window) {
     }
 }
 
-void Game::update_enemy() {
+void Game::update_enemies() {
     for (int i = 0; i < 4; i++) {
+        if (enemies[i]->weapon) {
+            if (enemies[i]->dead == 0) {
+                enemies[i]->weapon->set_position(enemies[i]->position.x + 3, enemies[i]->position.y + 3);
+            }
+        }
         if (enemies[i]->dead == 1) {
             enemy_amount--;
+            if (enemies[i]->weapon) {
+                enemies[i]->weapon->check = 0;
+            }
             map[enemies[i]->position.x / 16][enemies[i]->position.y / 16].type = EMPTY;
         } else {
             map[enemies[i]->position.x / 16][enemies[i]->position.y / 16].type = ENEMY;
@@ -146,19 +160,23 @@ int Cell::get_type() {
     return type;
 }
 
-void Game::update_bullet() {
-    if (bullet.check == 1) {
-        bullet.move_x(sin(bullet.angle) * bullet.speed);
-        bullet.move_y(cos(bullet.angle) * bullet.speed);
-        if (map[bullet.position.x / 16][bullet.position.y / 16].get_type() == WALL) {
-            bullet.check = 3;
-        }
-        if (map[bullet.position.x / 16][bullet.position.y / 16].get_type() == ENEMY) {
-            if (get_enemy(bullet.position.x, bullet.position.y) != 228) {
-                enemies[get_enemy(bullet.position.x, bullet.position.y)]->get_damage(bullet.damage);
+void Game::update_bullets() {
+    int x, y;
+    it = bullets.begin();
+    while (it != bullets.end()) {
+        x = it->position.x / 16;
+        y = it->position.y / 16;
+        it->move_x(sin(it->angle) * it->speed);
+        it->move_y(cos(it->angle) * it->speed);
+        if (map[x][y].get_type() == WALL) {
+            bullets.erase(it++);
+        } else if (map[x][y].get_type() == ENEMY) {
+            if (get_enemy(it->position.x, it->position.y) != 228) {
+                enemies[get_enemy(it->position.x, it->position.y)]->get_damage(it->damage);
             }
-            bullet.check = 3;
+            bullets.erase(it++);
         }
+        ++it;
     }
 }
 
@@ -206,12 +224,30 @@ int Game::get_item(double x_pos, double y_pos) {
     return 228;
 }
 
+int Game::get_weapon(double x_pos, double y_pos) {
+    int x = x_pos / 16;
+    int y = y_pos / 16;
+    int x1, y1;
+    for (int i = 0; i < 6; i++) {
+        x1 = weapons[i]->position.x / 16;
+        y1 = weapons[i]->position.y / 16;
+        if (x1 == x && y1 == y) {
+            return i;
+        }
+    }
+    return 228;
+}
 
 
 void Game::update_weapons() {
-    for (int i = 0; i < 3; i++) {
-        if (items[i]->check == 1) {
-            items[i]->set_position(player.position.x + 4, player.position.y + 4);
+    //for (int i = 0; i < 3; i++) {
+    //   if (weapons[i]->check == 1) {
+    //      weapons[i]->set_position(player.position.x + 4, player.position.y + 4);
+    // }
+    //}
+    if (player.weapon) {
+        if (player.weapon->check == 1) {
+            player.weapon->set_position(player.position.x + 3, player.position.y + 3);
         }
     }
 }
@@ -236,8 +272,8 @@ void Game::update_view(RenderWindow &window) {
 }
 
 void Game::update() {
-    update_enemy();
-    update_bullet();
+    update_enemies();
+    update_bullets();
     update_weapons();
     check_game();
 }
@@ -248,22 +284,38 @@ void Game::draw(RenderWindow &window) {
     for (int i = 0; i < 4; i++) {
         enemies[i]->draw(window);
     }
-    for (int i = 0; i < 3; i++) {
-        items[i]->draw(window);
+    for (int i = 0; i < 6; i++) {
+        weapons[i]->draw(window);
     }
-    bullet.draw(window);
+    for (it_draw = bullets.begin(); it_draw != bullets.end(); it_draw++) {
+        it_draw->draw(window);
+    }
     window.display();
 }
 
 void Game::pick_up_weapon() {
-    if (get_item(player.position.x, player.position.y) != 228) {
-        if (items[get_item(player.position.x, player.position.y)]->type() == WEAPON) {
-            items[get_item(player.position.x, player.position.y)]->check = 1;
-            player.set_weapon(items[get_item(player.position.x, player.position.y)]);
+    if (get_weapon(player.position.x, player.position.y) != 228) {
+        if (weapons[get_weapon(player.position.x, player.position.y)]->check == 0) {
+            if (weapons[get_weapon(player.position.x, player.position.y)]->type() == WEAPON) {
+                weapons[get_weapon(player.position.x, player.position.y)]->check = 1;
+                player.set_weapon(weapons[get_weapon(player.position.x, player.position.y)]);
+            }
         }
     }
 }
 
 void Game::drop_weapon() {
     player.drop_weapon();
+}
+
+void Game::player_attack(RenderWindow &window) {
+    if (player.weapon) {
+        player.weapon->attack(window, player.position.x, player.position.y);
+        if (player.weapon->type() == WEAPON) {
+            if (!player.weapon->clip.empty()) {
+                bullets.push_back(player.weapon->clip.top());
+                player.weapon->clip.pop();
+            }
+        }
+    }
 }

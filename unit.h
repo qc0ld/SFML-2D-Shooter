@@ -26,7 +26,7 @@ public:
     int size;
     int direction;
     Item *inventory[10];
-    shared_ptr<Item> weapon;
+    shared_ptr<Weapon> weapon;
     bool dead;
 
     Sprite sprite;
@@ -40,7 +40,7 @@ public:
 
     void draw(RenderWindow &window);
 
-    void set_weapon(shared_ptr<Item>(&new_weapon));
+    void set_weapon(shared_ptr<Weapon>(&new_weapon));
 
     void drop_weapon();
 

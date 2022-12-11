@@ -2,37 +2,12 @@
 #define WEAPONS_H
 
 #include "items.h"
+#include <stack>
+#include <iostream>
 
 using namespace std;
 using namespace sf;
 
-class Weapon : public Item {
-public:
-    double damage;
-    double rate_of_fire;
-public:
-
-
-    virtual void update(vector<vector<Cell>> &map) override = 0;
-
-    virtual void attack() = 0;
-
-    int type() override { return WEAPON; }
-
-    virtual ~Weapon() {}
-};
-
-
-class ak47 : public Weapon {
-public:
-    ak47();
-
-    void update(vector<vector<Cell>> &map) override;
-
-    void attack() override;
-
-    ~ak47() override {}
-};
 
 class Bullet {
 public:
@@ -40,11 +15,11 @@ public:
     Position position;
     double speed;
     Sprite sprite;
-    Texture texture;
+    Texture *texture;
     int check;
     double angle;
     Vector2f world_pos;
-
+public:
     Bullet();
 
     void update(RenderWindow &window);
@@ -56,6 +31,42 @@ public:
     void move_x(double x);
 
     void move_y(double y);
+};
+
+
+class Weapon : public Item {
+public:
+    stack<Bullet> clip;
+    int size;
+    int max_size;
+    double damage;
+    double rate_of_fire;
+public:
+
+
+    virtual void update(vector<vector<Cell>> &map) override = 0;
+
+    virtual void attack(RenderWindow &window, double x,double  y) = 0;
+
+    int type() override { return WEAPON; }
+
+    virtual ~Weapon() {}
+};
+
+
+
+class ak47 : public Weapon {
+public:
+    int size;
+    int max_size;
+public:
+    ak47();
+
+    void update(vector<vector<Cell>> &map) override;
+
+    void attack(RenderWindow &window, double x, double y) override;
+
+    ~ak47() override {}
 };
 
 

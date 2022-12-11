@@ -1,6 +1,5 @@
 #include "test.h"
 #include "game.h"
-#include "array.h"
 
 TEST(Unit, constructor) {
     Unit unit;
@@ -51,12 +50,6 @@ TEST(Bullet, moving) {
     EXPECT_DOUBLE_EQ(bullet.position.y, -39.599998474121094);
 }
 
-
-TEST(Array, constructor) {
-    my::Array<int, 5> array;
-    EXPECT_EQ(array.max_size(), 5);
-    EXPECT_EQ(array.size(), 0);
-}
 
 int gtest_main() {
     testing::InitGoogleTest();

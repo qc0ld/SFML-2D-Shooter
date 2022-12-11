@@ -1,17 +1,23 @@
 #include "weapons.h"
 
-
-
+using namespace std;
 ak47::ak47() : Weapon() {
     check = 0;
+    size = 30;
+    max_size = 30;
     texture = new Texture;
     texture->loadFromFile("Textures/Items/Weapons/ak47.png");
     sprite.setTexture(*texture);
 }
 
 
-void ak47::attack() {
-    return;
+void ak47::attack(RenderWindow &window, double x, double y) {
+    if (size > 0) {
+        Bullet bullet;
+        bullet.set_up(window, x, y);
+        clip.push(bullet);
+        size--;
+    }
 }
 
 void ak47::update(vector<vector<Cell>> &map) {
@@ -25,13 +31,14 @@ Bullet::Bullet() {
     speed = 1;
     check = 0;
     damage = 33;
-    texture.loadFromFile("Textures/Units/Bullet.png");
-    sprite.setTexture(texture);
+    texture = new sf::Texture;
+    texture->loadFromFile("Textures/Units/Bullet.png");
+    sprite.setTexture(*texture);
 }
 
 void Bullet::draw(RenderWindow &window) {
-    sprite.setPosition(position.x, position.y);
     if (check == 1) {
+        sprite.setPosition(position.x, position.y);
         window.draw(sprite);
     }
 }
