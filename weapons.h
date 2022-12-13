@@ -17,6 +17,7 @@ public:
     Sprite sprite;
     Texture *texture;
     int check;
+    int from;
     double angle;
     Vector2f world_pos;
 public:
@@ -25,6 +26,8 @@ public:
     void update(RenderWindow &window);
 
     void set_up(RenderWindow &window, double x, double y);
+
+    void enemy_set_up(double player_x, double player_y, double x, double y);
 
     void draw(RenderWindow &window);
 
@@ -44,15 +47,15 @@ public:
 public:
 
 
-    virtual void update(vector<vector<Cell>> &map) override = 0;
 
-    virtual void attack(RenderWindow &window, double x,double  y) = 0;
+    virtual void attack(RenderWindow &window, double x, double y) = 0;
+
+    virtual void enemy_attack(double player_x, double player_y) = 0;
 
     int type() override { return WEAPON; }
 
     virtual ~Weapon() {}
 };
-
 
 
 class ak47 : public Weapon {
@@ -62,9 +65,10 @@ public:
 public:
     ak47();
 
-    void update(vector<vector<Cell>> &map) override;
 
     void attack(RenderWindow &window, double x, double y) override;
+
+    void enemy_attack(double player_x, double player_y) override;
 
     ~ak47() override {}
 };

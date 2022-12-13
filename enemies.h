@@ -13,7 +13,7 @@ public:
 
     void follow_player();
 
-    virtual void attack_player() = 0;
+    virtual void attack_player(RenderWindow &window, double x, double y) = 0;
 
     void get_to_storage(double x, double y);
 
@@ -25,7 +25,7 @@ class Shooter : public Enemy {
 public:
     Shooter();
 
-    void attack_player() override;
+    void attack_player(RenderWindow &window, double x, double y) override;
 };
 
 /*

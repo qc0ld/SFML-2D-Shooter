@@ -1,6 +1,7 @@
 #include "weapons.h"
 
 using namespace std;
+
 ak47::ak47() : Weapon() {
     check = 0;
     size = 30;
@@ -20,9 +21,15 @@ void ak47::attack(RenderWindow &window, double x, double y) {
     }
 }
 
-void ak47::update(vector<vector<Cell>> &map) {
-    return;
+void ak47::enemy_attack(double player_x, double player_y) {
+    if (size > 0) {
+        Bullet bullet;
+        bullet.enemy_set_up(player_x, player_y, position.x, position.y);
+        clip.push(bullet);
+        size--;
+    }
 }
+
 
 
 Bullet::Bullet() {
@@ -31,6 +38,7 @@ Bullet::Bullet() {
     speed = 1;
     check = 0;
     damage = 33;
+    from = 0;
     texture = new sf::Texture;
     texture->loadFromFile("Textures/Units/Bullet.png");
     sprite.setTexture(*texture);
@@ -51,6 +59,13 @@ void Bullet::set_up(RenderWindow &window, double x, double y) {
     position.y = y + 4;
     angle = atan2(world_pos.x - position.x,
                   world_pos.y - position.y);
+    check = 1;
+}
+
+void Bullet::enemy_set_up(double player_x, double player_y, double x, double y) {
+    position.x = x + 4;
+    position.y = y + 4;
+    angle = atan2(player_x - position.x, player_y - position.y);
     check = 1;
 }
 

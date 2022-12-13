@@ -15,7 +15,6 @@ enum {
     WEAPON
 };
 
-class Cell;
 
 using namespace std;
 using namespace sf;
@@ -32,7 +31,7 @@ public:
 
     void draw(RenderWindow &window);
 
-    virtual void update(vector<vector<Cell>> &map) = 0;
+  //  virtual void update(vector<vector<Cell>> &map) = 0;
 
     virtual int type() { return ITEM; }
 

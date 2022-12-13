@@ -56,8 +56,6 @@ public:
 
     int get_dirrection();
 
-    //   void attack();
-
 };
 
 

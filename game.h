@@ -38,7 +38,6 @@ public:
     Floor();
 };
 
-
 class Game {
 public:
     int height;
@@ -57,10 +56,9 @@ public:
     list<Bullet> bullets;
     int level;
     View view;
-    std::list<Bullet>::iterator it;
-    std::list<Bullet>::iterator it_draw;
+    list<Bullet>::iterator it;
+    list<Bullet>::iterator itr;
 public:
-
     Game();
 
     void update_enemies();
@@ -98,6 +96,10 @@ public:
     void drop_weapon();
 
     void player_attack(RenderWindow &window);
+
+    void enemies_attack();
+
+    void restart();
 };
 
 
