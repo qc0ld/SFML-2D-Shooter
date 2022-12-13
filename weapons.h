@@ -43,14 +43,16 @@ public:
     int size;
     int max_size;
     double damage;
-    double rate_of_fire;
+    int reload_timer;
+    int reload_duration;
+    bool shot;
 public:
 
 
 
     virtual void attack(RenderWindow &window, double x, double y) = 0;
 
-    virtual void enemy_attack(double player_x, double player_y) = 0;
+    virtual void enemy_attack(double player_x, double player_y, double x, double y) = 0;
 
     int type() override { return WEAPON; }
 
@@ -68,7 +70,7 @@ public:
 
     void attack(RenderWindow &window, double x, double y) override;
 
-    void enemy_attack(double player_x, double player_y) override;
+    void enemy_attack(double player_x, double player_y, double x, double y) override;
 
     ~ak47() override {}
 };

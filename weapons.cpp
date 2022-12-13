@@ -6,6 +6,9 @@ ak47::ak47() : Weapon() {
     check = 0;
     size = 30;
     max_size = 30;
+    reload_timer = 0;
+    reload_duration = 50;
+    shot = 0;
     texture = new Texture;
     texture->loadFromFile("Textures/Items/Weapons/ak47.png");
     sprite.setTexture(*texture);
@@ -21,15 +24,14 @@ void ak47::attack(RenderWindow &window, double x, double y) {
     }
 }
 
-void ak47::enemy_attack(double player_x, double player_y) {
+void ak47::enemy_attack(double player_x, double player_y, double x, double y) {
     if (size > 0) {
         Bullet bullet;
-        bullet.enemy_set_up(player_x, player_y, position.x, position.y);
+        bullet.enemy_set_up(player_x, player_y, x, y);
         clip.push(bullet);
         size--;
     }
 }
-
 
 
 Bullet::Bullet() {
@@ -66,6 +68,7 @@ void Bullet::enemy_set_up(double player_x, double player_y, double x, double y) 
     position.x = x + 4;
     position.y = y + 4;
     angle = atan2(player_x - position.x, player_y - position.y);
+    angle = 1;
     check = 1;
 }
 

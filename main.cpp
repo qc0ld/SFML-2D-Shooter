@@ -7,7 +7,6 @@ int main() {
     int number = 0;
     // gtest_main();
     RenderWindow window(VideoMode(1280, 720), "Game");
-    window.setKeyRepeatEnabled(false);
     Event event;
     Game game;
     while (window.isOpen()) {
@@ -15,13 +14,7 @@ int main() {
             if (Keyboard::isKeyPressed(Keyboard::Escape) || event.type == Event::Closed) {
                 window.close();
             }
-            if (event.type == sf::Event::KeyPressed) {
-                if (event.key.code == Keyboard::Space) {
-                    game.player_attack(window);
-                }
-            }
         }
-
         game.update_view(window);
 
         if (Keyboard::isKeyPressed(Keyboard::A)) {
@@ -36,9 +29,13 @@ int main() {
         if (Keyboard::isKeyPressed(Keyboard::E)) {
             game.pick_up_weapon();
         }
+        if (Keyboard::isKeyPressed(Keyboard::Space)) {
+            game.player_attack(window);
+        }
         if (Keyboard::isKeyPressed(Keyboard::G)) {
             game.drop_weapon();
         }
+        game.enemies_attack();
         game.update();
         game.draw(window);
     }

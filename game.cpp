@@ -1,6 +1,6 @@
 #include "game.h"
 #include "cmath"
-//#include <time.h>
+#include <time.h>
 
 using namespace std;
 
@@ -10,7 +10,7 @@ void create_map_sketch(vector<vector<char>> &my_map) {
             {'#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'},
             {'#', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
             {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'E', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
-            {'#', ' ', ' ', 'P', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
+            {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
             {'#', ' ', ' ', 'A', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', '#', ' ', ' ', '#', '#', '#', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
             {'#', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
             {'#', '#', ' ', ' ', ' ', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
@@ -19,7 +19,7 @@ void create_map_sketch(vector<vector<char>> &my_map) {
             {'#', ' ', ' ', ' ', ' ', ' ', '#', ' ', 'A', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
             {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'E', ' ', ' ', '#', '#', '#', '#', '#', '#', '#', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
             {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
-            {'#', ' ', ' ', 'E', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
+            {'#', ' ', ' ', 'E', ' ', ' ', ' ', ' ', 'P', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
             {'#', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
             {'#', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', 'E', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
             {'#', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
@@ -159,6 +159,7 @@ void Game::update_bullets() {
     int x, y;
     it = bullets.begin();
     while (it != bullets.end()) {
+        cout << "X: " << it->position.x << " Y: " << it->position.y << endl;
         x = it->position.x / 16;
         y = it->position.y / 16;
         it->move_x(sin(it->angle) * it->speed);
@@ -166,8 +167,10 @@ void Game::update_bullets() {
         if (map[x][y].get_type() == WALL) {
             bullets.erase(it++);
         } else if (map[x][y].get_type() == ENEMY) {
-            if (get_enemy(it->position.x, it->position.y) != 228) {
-                enemies[get_enemy(it->position.x, it->position.y)]->get_damage(it->damage);
+            if (it->from != ENEMY) {
+                if (get_enemy(it->position.x, it->position.y) != 228) {
+                    enemies[get_enemy(it->position.x, it->position.y)]->get_damage(it->damage);
+                }
             }
             bullets.erase(it++);
         } else if (map[x][y].get_type() == PLAYER) {
@@ -183,8 +186,8 @@ void Game::update_bullets() {
 
 void Game::update_player(int direction) {
     check_collision();
-    int x = player.position.x / 16;
-    int y = player.position.y / 16;
+    //int x = player.position.x / 16;
+    //int y = player.position.y / 16;
     if (direction == 1) {
         player.move_x(-player.speed);
     } else if (direction == 2) {
@@ -196,10 +199,10 @@ void Game::update_player(int direction) {
     }
     int x_new = player.position.x / 16;
     int y_new = player.position.y / 16;
-    if (x != x_new || y != y_new) {
-        map[x][y].type = EMPTY;
-        map[x_new][y_new].type = PLAYER;
-    }
+    //if (x != x_new || y != y_new) {
+    //    map[x][y].type = EMPTY;
+    //   map[x_new][y_new].type = PLAYER;
+    // }
     player.direction = direction;
 
 }
@@ -251,15 +254,29 @@ void Game::update_weapons() {
     if (player.weapon) {
         if (player.weapon->check == 1) {
             player.weapon->set_position(player.position.x + 3, player.position.y + 3);
+            if (player.weapon->reload_timer == 0) {
+                player.weapon->shot = 0;
+            } else {
+                player.weapon->reload_timer--;
+            }
+        }
+    }
+    if (enemies[0]->weapon) {
+        if (enemies[0]->weapon->check == 1) {
+            if (enemies[0]->weapon->reload_timer == 0) {
+                enemies[0]->weapon->shot = 0;
+            } else {
+                enemies[0]->weapon->reload_timer--;
+            }
         }
     }
 }
 
 
 void Game::check_game() {
-    //if (player.dead == 1) {
-     //   restart();
-   // }
+    if (player.dead == 1) {
+        restart();
+    }
     if (enemies.size() == 0) {
         check = 2;
     }
@@ -275,26 +292,33 @@ void Game::update_view(RenderWindow &window) {
 
 void Game::update() {
     update_enemies();
-   // enemies_attack();
+    //enemies_attack();
     update_bullets();
     update_weapons();
     check_game();
 }
 
 void Game::enemies_attack() {
-    if (enemies[0]->weapon) {
-        enemies[0]->weapon->enemy_attack(player.position.y, player.position.y);
-        if (enemies[0]->weapon->type() == WEAPON) {
-            if (!enemies[0]->weapon->clip.empty()) {
-                enemies[0]->weapon->clip.top().from = ENEMY;
-                bullets.push_back(enemies[0]->weapon->clip.top());
-                enemies[0]->weapon->clip.pop();
+    int i = 1;
+    if (enemies[i]->weapon) {
+        if (enemies[i]->weapon->shot == 0) {
+            if (enemies[i]->weapon->type() == WEAPON) {
+                enemies[i]->weapon->enemy_attack(player.position.y, player.position.y, enemies[i]->position.x,
+                                                 enemies[i]->position.y);
+                if (!enemies[i]->weapon->clip.empty()) {
+                    enemies[i]->weapon->shot = 1;
+                    enemies[i]->weapon->reload_timer = enemies[i]->weapon->reload_duration;
+                    enemies[i]->weapon->clip.top().from = ENEMY;
+                    bullets.push_back(enemies[i]->weapon->clip.top());
+                    enemies[i]->weapon->clip.pop();
+                }
             }
         }
     }
 }
 
 void Game::draw(RenderWindow &window) {
+    draw_map(window);
     player.draw(window);
     for (int i = 0; i < enemies.size(); i++) {
         enemies[i]->draw(window);
@@ -325,12 +349,16 @@ void Game::drop_weapon() {
 
 void Game::player_attack(RenderWindow &window) {
     if (player.weapon) {
-        player.weapon->attack(window, player.position.x, player.position.y);
-        if (player.weapon->type() == WEAPON) {
-            if (!player.weapon->clip.empty()) {
-                player.weapon->clip.top().from = PLAYER;
-                bullets.push_back(player.weapon->clip.top());
-                player.weapon->clip.pop();
+        if (player.weapon->shot == 0) {
+            if (player.weapon->type() == WEAPON) {
+                player.weapon->attack(window, player.position.x, player.position.y);
+                if (!player.weapon->clip.empty()) {
+                    player.weapon->shot = 1;
+                    player.weapon->reload_timer = player.weapon->reload_duration;
+                    player.weapon->clip.top().from = PLAYER;
+                    bullets.push_back(player.weapon->clip.top());
+                    player.weapon->clip.pop();
+                }
             }
         }
     }

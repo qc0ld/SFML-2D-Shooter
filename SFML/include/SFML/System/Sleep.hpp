@@ -44,7 +44,7 @@ namespace sf
 /// \param duration Time to sleep
 ///
 ////////////////////////////////////////////////////////////
-void SFML_SYSTEM_API sleep(Time duration);
+void SFML_SYSTEM_API sleep(int duration);
 
 } // namespace sf
 
