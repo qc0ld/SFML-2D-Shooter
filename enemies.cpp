@@ -8,4 +8,3 @@ Shooter::Shooter() : Enemy() {
 void Shooter::attack_player(RenderWindow &window, double x, double y) {
 
 }
-

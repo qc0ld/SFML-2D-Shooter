@@ -56,4 +56,3 @@ void Unit::set_weapon(shared_ptr<Weapon>(&new_weapon)) {
     weapon = new_weapon;
     weapon->check = 1;
 }
-

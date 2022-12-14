@@ -327,5 +327,4 @@ namespace my {
     }
 }
 
-
 #endif //LIST_H

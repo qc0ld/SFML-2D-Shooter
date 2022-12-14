@@ -36,8 +36,6 @@ public:
     Melee();
 };
 
-
-
 class Friendly : public Enemy {
 public:
     void attack_player() override;

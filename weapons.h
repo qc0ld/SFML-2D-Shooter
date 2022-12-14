@@ -48,8 +48,6 @@ public:
     bool shot;
 public:
 
-
-
     virtual void attack(RenderWindow &window, double x, double y) = 0;
 
     virtual void enemy_attack(double player_x, double player_y, double x, double y) = 0;

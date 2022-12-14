@@ -38,7 +38,6 @@ public:
     virtual ~Item() {}
 };
 
-
 /*class Clip : public Item {
 private:
     int clip_capacity;

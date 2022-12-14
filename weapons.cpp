@@ -14,7 +14,6 @@ ak47::ak47() : Weapon() {
     sprite.setTexture(*texture);
 }
 
-
 void ak47::attack(RenderWindow &window, double x, double y) {
     if (size > 0) {
         Bullet bullet;

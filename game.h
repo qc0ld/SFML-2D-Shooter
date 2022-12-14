@@ -102,5 +102,4 @@ public:
     void restart();
 };
 
-
 #endif //MAP_H
