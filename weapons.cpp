@@ -7,7 +7,7 @@ ak47::ak47() : Weapon() {
     size = 30;
     max_size = 30;
     reload_timer = 0;
-    reload_duration = 50;
+    reload_duration = 200;
     shot = 0;
     texture = new Texture;
     texture->loadFromFile("Textures/Items/Weapons/ak47.png");
@@ -37,7 +37,7 @@ void ak47::enemy_attack(double player_x, double player_y, double x, double y) {
 Bullet::Bullet() {
     position.x = 0;
     position.y = 0;
-    speed = 1;
+    speed = 0.8;
     check = 0;
     damage = 33;
     from = 0;
@@ -61,6 +61,7 @@ void Bullet::set_up(RenderWindow &window, double x, double y) {
     position.y = y + 4;
     angle = atan2(world_pos.x - position.x,
                   world_pos.y - position.y);
+
     check = 1;
 }
 
@@ -68,7 +69,7 @@ void Bullet::enemy_set_up(double player_x, double player_y, double x, double y) 
     position.x = x + 4;
     position.y = y + 4;
     angle = atan2(player_x - position.x, player_y - position.y);
-    angle = 1;
+
     check = 1;
 }
 

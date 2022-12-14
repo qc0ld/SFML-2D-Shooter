@@ -5,7 +5,10 @@ using namespace sf;
 
 int main() {
     int number = 0;
-    // gtest_main();
+    if (number == 1) {
+        gtest_main();
+        return 0;
+    }
     RenderWindow window(VideoMode(1280, 720), "Game");
     Event event;
     Game game;
@@ -35,7 +38,6 @@ int main() {
         if (Keyboard::isKeyPressed(Keyboard::G)) {
             game.drop_weapon();
         }
-        game.enemies_attack();
         game.update();
         game.draw(window);
     }
