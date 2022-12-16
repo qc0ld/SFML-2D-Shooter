@@ -179,15 +179,13 @@ namespace my {
 
         void remove_node(const iterator &iterator) {
             Node *curent_node = iterator.node();
-
             curent_node->next->prev = curent_node->prev;
             curent_node->prev->next = curent_node->next;
-
-            delete curent_node;
 
             curent_node = nullptr;
 
             --node_size;
+
         }
     };
 }

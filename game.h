@@ -6,9 +6,9 @@
 #include <SFML/Graphics.hpp>
 #include "enemies.h"
 #include "weapons.h"
-#include "array"
 #include <list>
 #include <memory>
+#include "list.h"
 
 using namespace sf;
 using namespace std;
@@ -51,13 +51,12 @@ public:
     int weapon_amount;
     Unit player;
     Item *clip;
+    View view;
     vector<vector<Cell>> map;
     Bullet bullet;
-    list<Bullet> bullets;
-    int level;
-    View view;
-    list<Bullet>::iterator it;
-    list<Bullet>::iterator itr;
+    my::list<Bullet> bullets;
+    my::list<Bullet>::iterator it;
+    my::list<Bullet>::iterator itr;
 public:
     Game();
 

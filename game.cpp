@@ -1,6 +1,5 @@
 #include "game.h"
 #include "cmath"
-#include <time.h>
 
 using namespace std;
 
@@ -30,16 +29,15 @@ void create_map_sketch(vector<vector<char>> &my_map) {
 }
 
 
-Game::Game() : player(), bullet(), enemies(), items(), weapons() {
+Game::Game() : player(), bullets(), enemies(), items(), weapons(), it(nullptr), itr(nullptr) {
     vector<vector<char>> map_sketch;
     create_map_sketch(map_sketch);
     check = 0;
-    level = 1;
     height = map_sketch.size();
     width = map_sketch[0].size();
     vector<vector<Cell>> a(height, vector<Cell>(width));
     map = a;
-  // player.hp = 1000000;
+    player.hp = 1000;
     for (int i = 0; i < height; ++i) {
         for (int k = 0; k < width; ++k) {
             if (map_sketch[i][k] == '#') {
@@ -160,23 +158,23 @@ void Game::update_bullets() {
     int x, y;
     it = bullets.begin();
     while (it != bullets.end()) {
-        x = it->position.x / 16;
-        y = it->position.y / 16;
-        it->move_x(sin(it->angle) * it->speed);
-        it->move_y(cos(it->angle) * it->speed);
+        x = it.value().position.x / 16;
+        y = it.value().position.y / 16;
+        it.value().move_x(sin(it.value().angle) * it.value().speed);
+        it.value().move_y(cos(it.value().angle) * it.value().speed);
         if (map[x][y].get_type() == WALL) {
-            bullets.erase(it++);
+            bullets.erase(it);
         } else if (map[x][y].get_type() == ENEMY) {
-            if (it->from != ENEMY) {
-                if (get_enemy(it->position.x, it->position.y) != 228) {
-                    enemies[get_enemy(it->position.x, it->position.y)]->get_damage(it->damage);
-                    bullets.erase(it++);
+            if (it.value().from != ENEMY) {
+                if (get_enemy(it.value().position.x, it.value().position.y) != 228) {
+                    enemies[get_enemy(it.value().position.x, it.value().position.y)]->get_damage(it.value().damage);
+                    bullets.erase(it);
                 }
             }
         } else if (map[x][y].get_type() == PLAYER) {
-            if (it->from != PLAYER) {
-                player.get_damage(it->damage);
-                bullets.erase(it++);
+            if (it.value().from != PLAYER) {
+                player.get_damage(it.value().damage);
+                bullets.erase(it);
             }
         }
         ++it;
@@ -202,10 +200,12 @@ void Game::update_player(int direction) {
     }
     int x_new = player.position.x / 16;
     int y_new = player.position.y / 16;
-    if (x != x_new || y != y_new) {
-        map[x][y].type = EMPTY;
-        map[x_new][y_new].type = PLAYER;
-    }
+/*    if (x != x_new || y != y_new) {
+        if (map[x_new][y_new].type != WALL || map[x_new][y_new].type != ENEMY ) {
+            map[x][y].type = EMPTY;
+            map[x_new][y_new].type = PLAYER;
+        }
+    }*/
     player.direction = direction;
 
 }
@@ -336,8 +336,8 @@ void Game::draw(RenderWindow &window) {
     for (int i = 0; i < weapons.size(); i++) {
         weapons[i]->draw(window);
     }
-    for (itr = bullets.begin(); itr != bullets.end(); itr++) {
-        itr->draw(window);
+    for (itr = bullets.begin(); itr != bullets.end(); ++itr) {
+        itr.value().draw(window);
     }
     window.display();
 }
