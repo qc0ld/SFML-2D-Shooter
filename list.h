@@ -17,7 +17,7 @@ namespace my {
         size_t node_size;
     public:
         class iterator {
-        public:
+        private:
             Node *node_ptr;
         public:
             iterator(Node *node) {
