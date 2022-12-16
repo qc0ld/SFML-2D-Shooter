@@ -1,107 +1,195 @@
 #ifndef LIST_H
 #define LIST_H
-
-#include <iostream>
-#include <iterator>
-#include <list>
-
+using namespace std;
 
 namespace my {
-    template<class T>
+    template<typename T>
     class list {
-    public:
-        struct node {
-            T data;
-            node *next;
-
-            node(T const &_data, node *_next) {
-                data = _data;
-                next = _next;
-            }
-
-            node(T &&_data, node *_next) {
-                data = _data;
-                next = _next;
-            }
+    private:
+        struct Node {
+            Node *prev;
+            Node *next;
+            T value;
         };
 
-        struct Iterator {
-        private:
-            T *ptr;
+        Node *head;
+        Node *tail;
+
+        size_t node_size;
+    public:
+        class iterator {
         public:
-            Iterator() {
-                ptr = nullptr;
+            Node *node_ptr;
+        public:
+            iterator(Node *node) {
+                node_ptr = node;
             }
 
-            Iterator(T *_ptr) {
-                ptr = _ptr;
+            Node *node() const {
+                return node_ptr;
             }
 
-            T &operator*() {
-                return *ptr;
+            T &value() const {
+                return node_ptr->value;
             }
 
-            T *operator->() {
-                return ptr;
-            }
-
-            Iterator &operator++() {
-                ptr++;
+            iterator &operator++() {
+                if (node_ptr->next) {
+                    node_ptr = node_ptr->next;
+                }
                 return *this;
             }
 
-            Iterator operator++(int) {
-                return *this++;
+            iterator &operator--() {
+                if (node_ptr->prev != nullptr) {
+                    node_ptr = node_ptr->prev;
+                }
+                return *this;
             }
 
-            bool operator==(const Iterator &i) const {
-                return this->ptr == i.ptr;
+            bool operator==(const iterator &iterator) const {
+                return iterator.node_ptr == this->node_ptr;
             }
 
-            bool operator!=(const Iterator &i) const {
-                return this->ptr != i.ptr;
+            bool operator!=(const iterator &iterator) const {
+                return iterator.node_ptr != this->node_ptr;
             }
         };
 
-        int size;
-        node *head;
-        node *tail;
-        Iterator iterator();
-    public:
         list() {
-            size = 0;
-            head = nullptr;
+            head = new Node;
+            tail = new Node;
+
+            head->next = tail;
+            head->prev = nullptr;
+
+            tail->next = nullptr;
+            tail->prev = head;
+
+            node_size = 0;
+        }
+
+        ~list() {
             head->next = nullptr;
-        }
+            head->prev = nullptr;
 
-        void push_back(T new_data) {
-            node *new_node(new_data, nullptr);
+            tail->next = nullptr;
+            tail->prev = nullptr;
+
             if (head) {
-                node *temp = head;
-                while (temp->next) {
-                    temp = temp->next;
+                delete head;
+                head = nullptr;
+            }
+
+            if (tail) {
+                delete tail;
+                tail = nullptr;
+            }
+            node_size = 0;
+        }
+
+        bool empty() {
+            if (node_size == 0) {
+                return true;
+            }
+            return false;
+        }
+
+        size_t size() {
+            return node_size;
+        }
+
+        void clear() {
+            if (empty()) {
+                return;
+            }
+            for (iterator it = this->begin(); it != this->end(); ++it) {
+                Node *curent_node = it.node();
+                delete curent_node;
+                curent_node = nullptr;
+            }
+
+            head->next = tail;
+            tail->prev = head;
+            node_size = 0;
+
+        }
+
+        void push_back(const T &value) {
+            iterator iterator(tail);
+            insert_node(value, iterator);
+        }
+
+        void push_front(const T &value) {
+            iterator iterator(head->next);
+            insert_node(value, iterator);
+        }
+
+        void pop_back() {
+            iterator iterator(tail->prev);
+            remove_node(iterator);
+        }
+
+        void pop_front() {
+            iterator iterator(head->next);
+            remove_node(iterator);
+        }
+
+        void erase(const iterator &iterator) {
+            remove_node(iterator);
+        }
+
+        void print_list() {
+            for (iterator it = this->begin(); it != this->end(); ++it) {
+                std::cout << it.value() << std::endl;
+            }
+        }
+
+        iterator begin() const {
+            return iterator(head->next);
+        }
+
+        iterator end() const {
+            return iterator(tail);
+        }
+
+        iterator find(const T &value) const {
+            iterator it = this->begin();
+            for (; it != this->end(); ++it) {
+                if (value == it.value()) {
+                    return it;
                 }
-                temp->next = new_node;
-            } else {
-                head = new_node;
             }
+            return it;
         }
 
-        Iterator end() {
-            node *temp = head;
-            while (temp->next) {
-                temp = temp->next;
-            }
-            return iterator(temp);
+    private:
+        void insert_node(const T &value, const iterator &iterator) {
+            Node *new_node = new Node;
+            Node *curent_node = iterator.node();
+
+            new_node->next = curent_node;
+            new_node->prev = curent_node->prev;
+            curent_node->prev = new_node;
+            new_node->prev->next = new_node;
+
+            new_node->value = value;
+
+            ++node_size;
         }
 
+        void remove_node(const iterator &iterator) {
+            Node *curent_node = iterator.node();
 
-        Iterator begin() {
-            iterator = head->data;
-            return iterator;
+            curent_node->next->prev = curent_node->prev;
+            curent_node->prev->next = curent_node->next;
+
+            delete curent_node;
+
+            curent_node = nullptr;
+
+            --node_size;
         }
-
-
     };
 }
 
