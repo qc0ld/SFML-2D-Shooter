@@ -7,7 +7,7 @@ ak47::ak47() : Weapon() {
     size = 30;
     max_size = 30;
     reload_timer = 0;
-    reload_duration = 40;
+    reload_duration = 80;
     shot = 0;
 
     texture = new Texture;

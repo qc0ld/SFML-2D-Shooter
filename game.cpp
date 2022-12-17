@@ -12,7 +12,7 @@ void create_map_sketch(vector<vector<char>> &my_map) {
             {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
             {'#', ' ', ' ', 'A', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', '#', ' ', ' ', '#', '#', '#', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
             {'#', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
-            {'#', '#', ' ', ' ', ' ', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
+            {'#', '#', ' ', ' ', ' ', '#', '#', '#', '#', ' ', ' ', '#', '#', '#', '#', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
             {'#', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', '#', '#', '#', '#', '#', '#', ' ', ' ', '#', '#', '#'},
             {'#', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
             {'#', ' ', ' ', ' ', ' ', ' ', '#', ' ', 'A', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
@@ -38,7 +38,7 @@ Game::Game() : player(), bullets(), enemies(), items(), weapons(), it(nullptr), 
     vector<vector<Cell>> a(height, vector<Cell>(width));
     map = a;
 
-    player.hp = 1000;
+    player.hp = 100000;
     for (int i = 0; i < height; ++i) {
         for (int k = 0; k < width; ++k) {
             if (map_sketch[i][k] == '#') {
@@ -63,10 +63,16 @@ Game::Game() : player(), bullets(), enemies(), items(), weapons(), it(nullptr), 
         }
     }
     font.loadFromFile("Textures/Fonts/Font.ttf");
-    player_hp = new Text;
-    player_hp->setFont(font);
-    player_hp->setCharacterSize(12);
-    player_hp->setFillColor(Color::Yellow);
+    text = new Text;
+    text->setFont(font);
+    text->setCharacterSize(12);
+    text->setFillColor(Color::Yellow);
+
+    texture = new Texture;
+    texture->loadFromFile("Textures/Map/Background.png");
+
+    sprite.setTexture(*texture);
+    sprite.setPosition(640, 360);
 }
 
 void Game::draw_map(RenderWindow &window) {
@@ -267,7 +273,6 @@ void Game::update_weapons() {
     for (int i = 0; i < enemies.size(); i++) {
         if (enemies[i]->weapon) {
             if (enemies[i]->weapon->check == 1) {
-
                 if (enemies[i]->weapon->reload_timer == 0) {
                     enemies[i]->weapon->shot = 0;
                 } else {
@@ -298,29 +303,31 @@ void Game::update_view(RenderWindow &window) {
 
 void Game::update() {
     update_enemies();
-     enemies_attack();
     update_bullets();
     update_weapons();
     check_game();
     if (check == 1) {
         restart();
     }
+    enemies_attack();
 }
 
 void Game::enemies_attack() {
     for (int i = 0; i < enemies.size(); i++) {
-        if (enemies[i]->weapon) {
-            if (enemies[i]->weapon->shot == 0) {
-                if (enemies[i]->weapon->type() == WEAPON) {
-                    enemies[i]->weapon->enemy_attack(player.position.x, player.position.y, enemies[i]->position.x,
-                                                     enemies[i]->position.y);
-                    if (!enemies[i]->weapon->clip.empty()) {
-                        enemies[i]->weapon->shot = 1;
-                        enemies[i]->weapon->reload_timer = enemies[i]->weapon->reload_duration;
-                        enemies[i]->weapon->clip.top().from = ENEMY;
+        if (player_in_range(i)) {
+            if (enemies[i]->weapon) {
+                if (enemies[i]->weapon->shot == 0) {
+                    if (enemies[i]->weapon->type() == WEAPON) {
+                        enemies[i]->weapon->enemy_attack(player.position.x, player.position.y, enemies[i]->position.x,
+                                                         enemies[i]->position.y);
+                        if (!enemies[i]->weapon->clip.empty()) {
+                            enemies[i]->weapon->shot = 1;
+                            enemies[i]->weapon->reload_timer = enemies[i]->weapon->reload_duration;
+                            enemies[i]->weapon->clip.top().from = ENEMY;
 
-                        bullets.push_back(enemies[i]->weapon->clip.top());
-                        enemies[i]->weapon->clip.pop();
+                            bullets.push_back(enemies[i]->weapon->clip.top());
+                            enemies[i]->weapon->clip.pop();
+                        }
                     }
                 }
             }
@@ -328,7 +335,18 @@ void Game::enemies_attack() {
     }
 }
 
+bool Game::player_in_range(int number) {
+    int lenght = sqrt(pow(player.position.x - enemies[number]->position.x, 2) +
+                      pow(player.position.y - enemies[number]->position.y, 2)) / 16;
+    if (lenght > 5) {
+        return false;
+    }
+    return true;
+}
+
 void Game::draw(RenderWindow &window) {
+    sprite.setPosition(640, 360);
+    window.draw(sprite);
     draw_map(window);
     player.draw(window);
     for (int i = 0; i < enemies.size(); i++) {
@@ -421,7 +439,13 @@ void Game::interface(RenderWindow &window) {
             window.draw(*player.weapon->text);
         }
     }
-    player_hp->setString(to_string(player.hp));
-    player_hp->setPosition(player.position.x - 140, player.position.y + 75);
-    window.draw(*player_hp);
+    if (check != 2) {
+        text->setString(to_string(player.hp));
+        text->setPosition(player.position.x - 140, player.position.y + 75);
+    } else {
+        text->setCharacterSize(18);
+        text->setString("You won! press R to restart");
+        text->setPosition(player.position.x - 100, player.position.y - 40);
+    }
+    window.draw(*text);
 }

@@ -37,6 +37,7 @@ public:
 };
 
 
+
 class Weapon : public Item {
 public:
     stack<Bullet> clip;

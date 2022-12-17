@@ -94,7 +94,7 @@ namespace my {
         }
 
         void clear() {
-            if (empty()) {
+            if (node_size == 0) {
                 return;
             }
             for (iterator it = this->begin(); it != this->end(); ++it) {
@@ -102,9 +102,9 @@ namespace my {
                 delete curent_node;
                 curent_node = nullptr;
             }
-
             head->next = tail;
             tail->prev = head;
+
             node_size = 0;
 
         }
@@ -174,6 +174,7 @@ namespace my {
 
         void remove_node(const iterator &iterator) {
             Node *curent_node = iterator.node();
+
             curent_node->next->prev = curent_node->prev;
             curent_node->prev->next = curent_node->next;
 

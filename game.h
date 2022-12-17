@@ -58,7 +58,9 @@ public:
     my::list<Bullet>::iterator it;
     my::list<Bullet>::iterator itr;
     Font font;
-    Text *player_hp;
+    Text *text;
+    Texture *texture;
+    Sprite sprite;
 public:
     Game();
 
@@ -103,6 +105,8 @@ public:
     void restart();
 
     void interface(RenderWindow &window);
+
+    bool player_in_range(int number);
 };
 
 #endif //MAP_H
