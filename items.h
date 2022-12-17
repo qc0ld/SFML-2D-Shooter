@@ -3,7 +3,6 @@
 
 #include <SFML/Graphics.hpp>
 #include "cmath"
-#include "position.h"
 
 
 enum {
@@ -13,6 +12,12 @@ enum {
     PLAYER,
     ITEM,
     WEAPON
+};
+
+typedef struct Position Position;
+struct Position {
+    float x;
+    float y;
 };
 
 

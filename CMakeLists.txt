@@ -8,8 +8,8 @@ add_subdirectory(Google_test)
 include_directories(Google_test/googletest/include)
 include_directories(Google_test/googlemock/include)
 
-add_executable(lab4 main.cpp unit.cpp items.cpp game.h storage.cpp storage.h
-        weapons.cpp weapons.h enemies.cpp enemies.h game.cpp position.h test.cpp test.h list.h)
+add_executable(lab4 main.cpp unit.cpp items.cpp game.h weapons.cpp weapons.h enemies.cpp
+        enemies.h game.cpp test.cpp test.h list.h)
 include_directories(SFML/include)
 
 set(SFML_ROOT SFML)

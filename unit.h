@@ -3,7 +3,6 @@
 
 #include <SFML/Graphics.hpp>
 #include <cmath>
-#include "position.h"
 #include "weapons.h"
 #include <list>
 #include <memory>
@@ -11,12 +10,6 @@
 
 using namespace sf;
 using namespace std;
-
-
-
-class Cell;
-
-class Game;
 
 class Unit {
 public:
