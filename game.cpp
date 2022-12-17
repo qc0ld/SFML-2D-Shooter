@@ -37,6 +37,7 @@ Game::Game() : player(), bullets(), enemies(), items(), weapons(), it(nullptr), 
     width = map_sketch[0].size();
     vector<vector<Cell>> a(height, vector<Cell>(width));
     map = a;
+
     player.hp = 1000;
     for (int i = 0; i < height; ++i) {
         for (int k = 0; k < width; ++k) {
@@ -61,6 +62,11 @@ Game::Game() : player(), bullets(), enemies(), items(), weapons(), it(nullptr), 
             }
         }
     }
+    font.loadFromFile("Textures/Fonts/Font.ttf");
+    player_hp = new Text;
+    player_hp->setFont(font);
+    player_hp->setCharacterSize(12);
+    player_hp->setFillColor(Color::Yellow);
 }
 
 void Game::draw_map(RenderWindow &window) {
@@ -155,7 +161,7 @@ int Cell::get_type() {
 }
 
 void Game::update_bullets() {
-    int x, y;
+    int x, y, x1, y1;
     it = bullets.begin();
     while (it != bullets.end()) {
         x = it.value().position.x / 16;
@@ -171,10 +177,14 @@ void Game::update_bullets() {
                     bullets.erase(it);
                 }
             }
-        } else if (map[x][y].get_type() == PLAYER) {
-            if (it.value().from != PLAYER) {
-                player.get_damage(it.value().damage);
-                bullets.erase(it);
+        } else {
+            x1 = player.position.x / 16;
+            y1 = player.position.y / 16;
+            if (x == x1 && y == y1) {
+                if (it.value().from != PLAYER) {
+                    player.get_damage(it.value().damage);
+                    bullets.erase(it);
+                }
             }
         }
         ++it;
@@ -198,16 +208,7 @@ void Game::update_player(int direction) {
     } else if (direction == 4) {
         player.move_y(player.speed);
     }
-    int x_new = player.position.x / 16;
-    int y_new = player.position.y / 16;
-/*    if (x != x_new || y != y_new) {
-        if (map[x_new][y_new].type != WALL || map[x_new][y_new].type != ENEMY ) {
-            map[x][y].type = EMPTY;
-            map[x_new][y_new].type = PLAYER;
-        }
-    }*/
     player.direction = direction;
-
 }
 
 int Game::get_enemy(double x_pos, double y_pos) {
@@ -297,7 +298,7 @@ void Game::update_view(RenderWindow &window) {
 
 void Game::update() {
     update_enemies();
-    enemies_attack();
+     enemies_attack();
     update_bullets();
     update_weapons();
     check_game();
@@ -339,6 +340,7 @@ void Game::draw(RenderWindow &window) {
     for (itr = bullets.begin(); itr != bullets.end(); ++itr) {
         itr.value().draw(window);
     }
+    interface(window);
     window.display();
 }
 
@@ -407,4 +409,19 @@ void Game::restart() {
             }
         }
     }
+}
+
+void Game::interface(RenderWindow &window) {
+    if (player.weapon) {
+        if (player.weapon->type() == WEAPON) {
+            player.weapon->text->setString(to_string(player.weapon->size) + " / 30");
+
+            player.weapon->text->setPosition(player.position.x + 110, player.position.y + 75);
+
+            window.draw(*player.weapon->text);
+        }
+    }
+    player_hp->setString(to_string(player.hp));
+    player_hp->setPosition(player.position.x - 140, player.position.y + 75);
+    window.draw(*player_hp);
 }

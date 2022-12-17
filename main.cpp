@@ -12,12 +12,23 @@ int main() {
     RenderWindow window(VideoMode(1280, 720), "Game");
     Event event;
     Game game;
+    Font font;
+    Text text;
+    font.loadFromFile("Textures/Fonts/Font.ttf");
+    text.setFont(font);
+    text.setCharacterSize(24);
+    text.setColor(Color::Red);
+    text.setString("dshiajda");
+    text.setPosition(150,150);
+
     while (window.isOpen()) {
         while (window.pollEvent(event)) {
             if (Keyboard::isKeyPressed(Keyboard::Escape) || event.type == Event::Closed) {
                 window.close();
             }
         }
+        text.setPosition(150,150);
+
         game.update_view(window);
 
         if (Keyboard::isKeyPressed(Keyboard::A)) {

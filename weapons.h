@@ -46,6 +46,8 @@ public:
     int reload_timer;
     int reload_duration;
     bool shot;
+    Text *text;
+    Font font;
 public:
 
     virtual void attack(RenderWindow &window, double x, double y) = 0;
@@ -54,23 +56,17 @@ public:
 
     int type() override { return WEAPON; }
 
-    virtual ~Weapon() {}
 };
 
 
 class ak47 : public Weapon {
 public:
-    int size;
-    int max_size;
-public:
     ak47();
-
 
     void attack(RenderWindow &window, double x, double y) override;
 
     void enemy_attack(double player_x, double player_y, double x, double y) override;
 
-    ~ak47() override {}
 };
 
 

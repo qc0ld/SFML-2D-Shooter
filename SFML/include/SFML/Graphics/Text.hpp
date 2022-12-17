@@ -207,7 +207,7 @@ public:
     /// Use setFillColor() or setOutlineColor() instead.
     ///
     ////////////////////////////////////////////////////////////
-    SFML_DEPRECATED void setColor(const Color& color);
+     void setColor(const Color& color);
 
     ////////////////////////////////////////////////////////////
     /// \brief Set the fill color of the text

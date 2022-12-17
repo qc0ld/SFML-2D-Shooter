@@ -13,3 +13,7 @@ void Item::draw(RenderWindow &window) {
     sprite.setPosition(position.x, position.y);
     window.draw(sprite);
 }
+
+Item::~Item() {
+    delete texture;
+}

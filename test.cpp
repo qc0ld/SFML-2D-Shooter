@@ -124,7 +124,7 @@ TEST(Game, check_game) {
     EXPECT_EQ(game.check, 0);
     int j = game.enemies.size();
     for (int i = 0; i < j; i++){
-        game.enemies[game.enemies.size() - 1]->get_damage(200);
+        game.enemies[game.enemies.size() - 1]->get_damage(100);
         game.update_enemies();
     }
     //все противники мертвы

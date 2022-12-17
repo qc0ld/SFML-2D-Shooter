@@ -57,6 +57,8 @@ public:
     my::list<Bullet> bullets;
     my::list<Bullet>::iterator it;
     my::list<Bullet>::iterator itr;
+    Font font;
+    Text *player_hp;
 public:
     Game();
 
@@ -99,6 +101,8 @@ public:
     void enemies_attack();
 
     void restart();
+
+    void interface(RenderWindow &window);
 };
 
 #endif //MAP_H

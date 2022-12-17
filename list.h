@@ -69,20 +69,15 @@ namespace my {
         }
 
         ~list() {
-            head->next = nullptr;
-            head->prev = nullptr;
+            Node *trash = nullptr;
+            Node *curent_node = head;
+            while (curent_node) {
+                trash = curent_node;
+                curent_node = curent_node->next;
 
-            tail->next = nullptr;
-            tail->prev = nullptr;
+                delete trash;
 
-            if (head) {
-                delete head;
-                head = nullptr;
-            }
-
-            if (tail) {
-                delete tail;
-                tail = nullptr;
+                trash = nullptr;
             }
             node_size = 0;
         }

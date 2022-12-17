@@ -35,7 +35,7 @@ public:
 
     virtual int type() { return ITEM; }
 
-    virtual ~Item() {}
+    ~Item();
 };
 
 /*class Clip : public Item {
