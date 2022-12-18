@@ -107,6 +107,9 @@ public:
     void interface(RenderWindow &window);
 
     bool player_in_range(int number);
+
+    void enemy_walk();
+
 };
 
 #endif //MAP_H

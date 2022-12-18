@@ -1,5 +1,6 @@
 #include "game.h"
 #include "cmath"
+#include <time.h>
 
 using namespace std;
 
@@ -83,6 +84,7 @@ void Game::draw_map(RenderWindow &window) {
     }
 }
 
+
 void Game::update_enemies() {
     for (int i = 0; i < enemies.size(); i++) {
         if (enemies[i]->weapon) {
@@ -101,6 +103,40 @@ void Game::update_enemies() {
         }
     }
 }
+
+void Game::enemy_walk() {
+    int i = 0;
+    if (enemies.size() != 0) {
+        if (enemies[i]->dead == 0) {
+            srand(time(NULL));
+            enemies[i]->direction = rand() % 5;
+            int x = enemies[i]->position.x / 16;
+            int y = enemies[i]->position.y / 16;
+            if (map[x][y + 1].type == WALL) {
+                enemies[i]->direction = 2;
+            }
+            if (map[x][y - 1].type == WALL) {
+                enemies[i]->direction = 4;
+            }
+            if (map[x + 1][y].type == WALL) {
+                enemies[i]->direction = 1;
+            }
+            if (map[x - 1][y].type == WALL) {
+                enemies[i]->direction = 3;
+            }
+
+            enemies[i]->move_with_direction(enemies[i]->direction);
+
+            int x1 = enemies[i]->position.x / 16;
+            int y1 = enemies[i]->position.y / 16;
+
+            if (x != enemies[i]->position.x && y != enemies[i]->position.y) {
+                map[x][y].type = EMPTY;
+            }
+        }
+    }
+}
+
 
 void Game::check_collision() {
     int x = player.position.x / 16;
@@ -203,17 +239,7 @@ void Game::update_player(int direction) {
     if (player.weapon) {
         player.weapon->set_position(player.position.x + 3, player.position.y + 3);
     }
-    int x = player.position.x / 16;
-    int y = player.position.y / 16;
-    if (direction == 1) {
-        player.move_x(-player.speed);
-    } else if (direction == 2) {
-        player.move_y(-player.speed);
-    } else if (direction == 3) {
-        player.move_x(player.speed);
-    } else if (direction == 4) {
-        player.move_y(player.speed);
-    }
+    player.move_with_direction(direction);
     player.direction = direction;
 }
 
@@ -310,6 +336,8 @@ void Game::update() {
         restart();
     }
     enemies_attack();
+    enemy_walk();
+
 }
 
 void Game::enemies_attack() {
@@ -345,8 +373,7 @@ bool Game::player_in_range(int number) {
 }
 
 void Game::draw(RenderWindow &window) {
-    sprite.setPosition(640, 360);
-    window.draw(sprite);
+
     draw_map(window);
     player.draw(window);
     for (int i = 0; i < enemies.size(); i++) {
@@ -359,6 +386,8 @@ void Game::draw(RenderWindow &window) {
         itr.value().draw(window);
     }
     interface(window);
+    sprite.setPosition(640, 360);
+    window.draw(sprite);
     window.display();
 }
 
@@ -372,6 +401,7 @@ void Game::pick_up_weapon() {
         }
     }
 }
+
 
 void Game::drop_weapon() {
     player.drop_weapon();
