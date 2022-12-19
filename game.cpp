@@ -31,7 +31,7 @@ void create_map_sketch(vector<vector<char>> &my_map) {
 }
 
 
-Game::Game() : bullets(), enemies(), items(), weapons(), it(nullptr), itr(nullptr) {
+Game::Game() : bullets(), enemies(), items(), weapons(), it(nullptr) {
     vector<vector<char>> map_sketch;
     create_map_sketch(map_sketch);
 
@@ -409,8 +409,8 @@ void Game::draw(RenderWindow &window) {
     for (int i = 0; i < weapons.size(); i++) {
         weapons[i]->draw(window);
     }
-    for (itr = bullets.begin(); itr != bullets.end(); ++itr) {
-        itr.value().draw(window);
+    for (it = bullets.begin(); it != bullets.end(); ++it) {
+        it.value().draw(window);
     }
     interface(window);
     sprite.setPosition(640, 360);

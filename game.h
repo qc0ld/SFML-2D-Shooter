@@ -56,7 +56,6 @@ public:
     Bullet bullet;
     my::list<Bullet> bullets;
     my::list<Bullet>::iterator it;
-    my::list<Bullet>::iterator itr;
     Font font;
     Text *text;
     Texture *texture;
