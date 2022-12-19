@@ -9,6 +9,7 @@ int main() {
         gtest_main();
         return 0;
     }
+    srand(time(NULL));
     RenderWindow window(VideoMode(1280, 720), "Game");
     Event event;
     Game game;

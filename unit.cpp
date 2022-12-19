@@ -14,12 +14,26 @@ Unit::Unit() {
     texture = new Texture;
     texture->loadFromFile("Textures/Units/Player.png");
     sprite.setTexture(*texture);
+    walk_timer = 0;
+    walk_duration = 400;
 }
 
 void Unit::draw(RenderWindow &window) {
     if (dead == 0) {
         sprite.setPosition(position.x, position.y);
         window.draw(sprite);
+    }
+}
+
+void Unit::move_with_direction(int dir) {
+    if (dir == 1) {
+        move_x(-speed);
+    } else if (dir == 2) {
+        move_y(-speed);
+    } else if (dir == 3) {
+        move_x(speed);
+    } else if (dir == 4) {
+        move_y(speed);
     }
 }
 

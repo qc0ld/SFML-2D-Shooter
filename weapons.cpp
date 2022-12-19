@@ -25,7 +25,6 @@ ak47::ak47() : Weapon() {
 
 void ak47::attack(RenderWindow &window, double x, double y) {
     if (size > 0) {
-        cout << size << endl;
         Bullet bullet;
         bullet.set_up(window, x, y);
         clip.push(bullet);

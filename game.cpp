@@ -1,6 +1,7 @@
 #include "game.h"
 #include "cmath"
 #include <time.h>
+#include <random>
 
 using namespace std;
 
@@ -30,16 +31,22 @@ void create_map_sketch(vector<vector<char>> &my_map) {
 }
 
 
-Game::Game() : player(), bullets(), enemies(), items(), weapons(), it(nullptr), itr(nullptr) {
+Game::Game() : bullets(), enemies(), items(), weapons(), it(nullptr), itr(nullptr) {
     vector<vector<char>> map_sketch;
     create_map_sketch(map_sketch);
+
+    player = make_unique<Unit>();
+
     check = 0;
+
     height = map_sketch.size();
     width = map_sketch[0].size();
+
     vector<vector<Cell>> a(height, vector<Cell>(width));
     map = a;
 
-    player.hp = 100000;
+    player->hp = 100000;
+
     for (int i = 0; i < height; ++i) {
         for (int k = 0; k < width; ++k) {
             if (map_sketch[i][k] == '#') {
@@ -54,7 +61,7 @@ Game::Game() : player(), bullets(), enemies(), items(), weapons(), it(nullptr), 
                     enemies[enemies.size() - 1]->set_position(i * 16, k * 16);
                     enemies[enemies.size() - 1]->set_weapon(weapons[weapons.size() - 1]);
                 } else if (map_sketch[i][k] == 'P') {
-                    player.set_position(i * 16, k * 16);
+                    player->set_position(i * 16, k * 16);
                     map[i][k].type = PLAYER;
                 } else if (map_sketch[i][k] == 'A') {
                     weapons.push_back(make_shared<ak47>());
@@ -87,6 +94,9 @@ void Game::draw_map(RenderWindow &window) {
 
 void Game::update_enemies() {
     for (int i = 0; i < enemies.size(); i++) {
+
+        enemy_walk(i);
+
         if (enemies[i]->weapon) {
             if (enemies[i]->dead == 0) {
                 enemies[i]->weapon->set_position(enemies[i]->position.x + 3, enemies[i]->position.y + 3);
@@ -104,32 +114,20 @@ void Game::update_enemies() {
     }
 }
 
-void Game::enemy_walk() {
-    int i = 0;
+void Game::enemy_walk(int i) {
     if (enemies.size() != 0) {
         if (enemies[i]->dead == 0) {
-            srand(time(NULL));
-            enemies[i]->direction = rand() % 5;
             int x = enemies[i]->position.x / 16;
             int y = enemies[i]->position.y / 16;
-            if (map[x][y + 1].type == WALL) {
-                enemies[i]->direction = 2;
-            }
-            if (map[x][y - 1].type == WALL) {
-                enemies[i]->direction = 4;
-            }
-            if (map[x + 1][y].type == WALL) {
-                enemies[i]->direction = 1;
-            }
-            if (map[x - 1][y].type == WALL) {
-                enemies[i]->direction = 3;
-            }
 
+            if (enemies[i]->walk_timer == 0) {
+                enemies[i]->direction = rand() % 4 + 1;
+                enemies[i]->walk_timer = enemies[i]->walk_duration;
+            } else {
+                enemies[i]->walk_timer--;
+            }
             enemies[i]->move_with_direction(enemies[i]->direction);
-
-            int x1 = enemies[i]->position.x / 16;
-            int y1 = enemies[i]->position.y / 16;
-
+            check_enemy_collision(enemies[i]);
             if (x != enemies[i]->position.x && y != enemies[i]->position.y) {
                 map[x][y].type = EMPTY;
             }
@@ -138,39 +136,66 @@ void Game::enemy_walk() {
 }
 
 
-void Game::check_collision() {
-    int x = player.position.x / 16;
-    int y = player.position.y / 16;
-    if (player.direction == 1) {
+void Game::check_enemy_collision(unique_ptr<Enemy> &unit) {
+    int x = unit->position.x / 16;
+    int y = unit->position.y / 16;
+    if (unit->direction == 1) {
+        if ((map[x][y].get_type() == WALL ||
+             map[x][y].get_type() == EMPTY && map[x][y + 1].get_type() == WALL)) {
+            unit->move_x(unit->speed + 0.01);
+        }
+    } else if (unit->direction == 2) {
+        if ((map[x][y].get_type() == WALL ||
+             map[x][y].get_type() == EMPTY && map[x + 1][y].get_type() == WALL)) {
+            unit->move_y(unit->speed + 0.01);
+        }
+    } else if (unit->direction == 3) {
+        if ((map[x + 1][y].get_type() == WALL ||
+             map[x + 1][y].get_type() != WALL && map[x + 1][y + 1].get_type() == WALL)) {
+            unit->move_x(-unit->speed - 0.01);
+        }
+    } else if (unit->direction == 4) {
+        if ((map[x][y + 1].get_type() == WALL ||
+             map[x][y + 1].get_type() != WALL && map[x + 1][y + 1].get_type() == WALL)) {
+            unit->move_y(-unit->speed - 0.01);
+        }
+    }
+}
+
+
+void Game::check_collision(unique_ptr<Unit> &unit) {
+    int x = unit->position.x / 16;
+    int y = unit->position.y / 16;
+    if (unit->direction == 1) {
         if ((map[x][y].get_type() == WALL ||
              map[x][y].get_type() == EMPTY && map[x][y + 1].get_type() == WALL) ||
             (map[x][y].get_type() == ENEMY ||
              map[x][y].get_type() == EMPTY && map[x][y + 1].get_type() == ENEMY)) {
-            player.move_x(player.speed + 0.01);
+            unit->move_x(unit->speed + 0.01);
         }
     }
-    if (player.direction == 2) {
+    if (unit->direction == 2) {
         if ((map[x][y].get_type() == WALL ||
              map[x][y].get_type() == EMPTY && map[x + 1][y].get_type() == WALL) ||
             (map[x][y].get_type() == ENEMY ||
              map[x][y].get_type() == EMPTY && map[x + 1][y].get_type() == ENEMY)) {
-            player.move_y(player.speed + 0.01);
+            unit->move_y(unit->speed + 0.01);
         }
     }
-    if (player.direction == 3) {
+    if (unit->direction == 3) {
         if ((map[x + 1][y].get_type() == WALL ||
              map[x + 1][y].get_type() != WALL && map[x + 1][y + 1].get_type() == WALL) ||
             map[x + 1][y].get_type() == ENEMY ||
             map[x + 1][y].get_type() == EMPTY && map[x + 1][y + 1].get_type() == ENEMY) {
-            player.move_x(-player.speed - 0.01);
+            unit->move_x(-unit->speed - 0.01);
         }
     }
-    if (player.direction == 4) {
+    if (unit->direction == 4) {
         if ((map[x][y + 1].get_type() == WALL ||
              map[x][y + 1].get_type() != WALL && map[x + 1][y + 1].get_type() == WALL) ||
             (map[x][y + 1].get_type() == ENEMY ||
              map[x][y + 1].get_type() == EMPTY && map[x + 1][y + 1].get_type() == ENEMY)) {
-            player.move_y(-player.speed - 0.01);
+            unit->move_y(-unit->speed - 0.01);
         }
     }
 }
@@ -220,11 +245,11 @@ void Game::update_bullets() {
                 }
             }
         } else {
-            x1 = player.position.x / 16;
-            y1 = player.position.y / 16;
+            x1 = player->position.x / 16;
+            y1 = player->position.y / 16;
             if (x == x1 && y == y1) {
                 if (it.value().from != PLAYER) {
-                    player.get_damage(it.value().damage);
+                    player->get_damage(it.value().damage);
                     bullets.erase(it);
                 }
             }
@@ -235,12 +260,12 @@ void Game::update_bullets() {
 
 
 void Game::update_player(int direction) {
-    check_collision();
-    if (player.weapon) {
-        player.weapon->set_position(player.position.x + 3, player.position.y + 3);
+    check_collision(player);
+    if (player->weapon) {
+        player->weapon->set_position(player->position.x + 3, player->position.y + 3);
     }
-    player.move_with_direction(direction);
-    player.direction = direction;
+    player->move_with_direction(direction);
+    player->direction = direction;
 }
 
 int Game::get_enemy(double x_pos, double y_pos) {
@@ -287,12 +312,12 @@ int Game::get_weapon(double x_pos, double y_pos) {
 
 
 void Game::update_weapons() {
-    if (player.weapon) {
-        if (player.weapon->check == 1) {
-            if (player.weapon->reload_timer == 0) {
-                player.weapon->shot = 0;
+    if (player->weapon) {
+        if (player->weapon->check == 1) {
+            if (player->weapon->reload_timer == 0) {
+                player->weapon->shot = 0;
             } else {
-                player.weapon->reload_timer--;
+                player->weapon->reload_timer--;
             }
         }
     }
@@ -311,7 +336,7 @@ void Game::update_weapons() {
 
 
 void Game::check_game() {
-    if (player.dead == 1) {
+    if (player->dead == 1) {
         check = 1;
     }
     if (enemies.size() == 0) {
@@ -322,22 +347,23 @@ void Game::check_game() {
 
 void Game::update_view(RenderWindow &window) {
     window.clear();
-    view.setCenter(player.position.x + 8, player.position.y + 8);
+    view.setCenter(player->position.x + 8, player->position.y + 8);
     view.setSize(320, 180);
     window.setView(view);
 }
 
 void Game::update() {
     update_enemies();
+    enemies_attack();
+
     update_bullets();
+
     update_weapons();
+
     check_game();
     if (check == 1) {
         restart();
     }
-    enemies_attack();
-    enemy_walk();
-
 }
 
 void Game::enemies_attack() {
@@ -346,7 +372,8 @@ void Game::enemies_attack() {
             if (enemies[i]->weapon) {
                 if (enemies[i]->weapon->shot == 0) {
                     if (enemies[i]->weapon->type() == WEAPON) {
-                        enemies[i]->weapon->enemy_attack(player.position.x, player.position.y, enemies[i]->position.x,
+                        enemies[i]->weapon->enemy_attack(player->position.x, player->position.y,
+                                                         enemies[i]->position.x,
                                                          enemies[i]->position.y);
                         if (!enemies[i]->weapon->clip.empty()) {
                             enemies[i]->weapon->shot = 1;
@@ -364,8 +391,8 @@ void Game::enemies_attack() {
 }
 
 bool Game::player_in_range(int number) {
-    int lenght = sqrt(pow(player.position.x - enemies[number]->position.x, 2) +
-                      pow(player.position.y - enemies[number]->position.y, 2)) / 16;
+    int lenght = sqrt(pow(player->position.x - enemies[number]->position.x, 2) +
+                      pow(player->position.y - enemies[number]->position.y, 2)) / 16;
     if (lenght > 5) {
         return false;
     }
@@ -375,7 +402,7 @@ bool Game::player_in_range(int number) {
 void Game::draw(RenderWindow &window) {
 
     draw_map(window);
-    player.draw(window);
+    player->draw(window);
     for (int i = 0; i < enemies.size(); i++) {
         enemies[i]->draw(window);
     }
@@ -392,11 +419,11 @@ void Game::draw(RenderWindow &window) {
 }
 
 void Game::pick_up_weapon() {
-    if (get_weapon(player.position.x, player.position.y) != 228) {
-        if (weapons[get_weapon(player.position.x, player.position.y)]->check == 0) {
-            if (weapons[get_weapon(player.position.x, player.position.y)]->type() == WEAPON) {
-                weapons[get_weapon(player.position.x, player.position.y)]->check = 1;
-                player.set_weapon(weapons[get_weapon(player.position.x, player.position.y)]);
+    if (get_weapon(player->position.x, player->position.y) != 228) {
+        if (weapons[get_weapon(player->position.x, player->position.y)]->check == 0) {
+            if (weapons[get_weapon(player->position.x, player->position.y)]->type() == WEAPON) {
+                weapons[get_weapon(player->position.x, player->position.y)]->check = 1;
+                player->set_weapon(weapons[get_weapon(player->position.x, player->position.y)]);
             }
         }
     }
@@ -404,20 +431,20 @@ void Game::pick_up_weapon() {
 
 
 void Game::drop_weapon() {
-    player.drop_weapon();
+    player->drop_weapon();
 }
 
 void Game::player_attack(RenderWindow &window) {
-    if (player.weapon) {
-        if (player.weapon->shot == 0) {
-            if (player.weapon->type() == WEAPON) {
-                player.weapon->attack(window, player.position.x, player.position.y);
-                if (!player.weapon->clip.empty()) {
-                    player.weapon->shot = 1;
-                    player.weapon->reload_timer = player.weapon->reload_duration;
-                    player.weapon->clip.top().from = PLAYER;
-                    bullets.push_back(player.weapon->clip.top());
-                    player.weapon->clip.pop();
+    if (player->weapon) {
+        if (player->weapon->shot == 0) {
+            if (player->weapon->type() == WEAPON) {
+                player->weapon->attack(window, player->position.x, player->position.y);
+                if (!player->weapon->clip.empty()) {
+                    player->weapon->shot = 1;
+                    player->weapon->reload_timer = player->weapon->reload_duration;
+                    player->weapon->clip.top().from = PLAYER;
+                    bullets.push_back(player->weapon->clip.top());
+                    player->weapon->clip.pop();
                 }
             }
         }
@@ -447,9 +474,9 @@ void Game::restart() {
                 enemies[enemies.size() - 1]->set_weapon(weapons[weapons.size() - 1]);
                 enemy_amount++;
             } else if (map_sketch[i][k] == 'P') {
-                player.set_position(i * 16, k * 16);
-                player.dead = 0;
-                player.hp = 100;
+                player->set_position(i * 16, k * 16);
+                player->dead = 0;
+                player->hp = 100;
                 map[i][k].type = PLAYER;
             } else if (map_sketch[i][k] == 'A') {
                 weapons.push_back(make_shared<ak47>());
@@ -460,22 +487,22 @@ void Game::restart() {
 }
 
 void Game::interface(RenderWindow &window) {
-    if (player.weapon) {
-        if (player.weapon->type() == WEAPON) {
-            player.weapon->text->setString(to_string(player.weapon->size) + " / 30");
+    if (player->weapon) {
+        if (player->weapon->type() == WEAPON) {
+            player->weapon->text->setString(to_string(player->weapon->size) + " / 30");
 
-            player.weapon->text->setPosition(player.position.x + 110, player.position.y + 75);
+            player->weapon->text->setPosition(player->position.x + 110, player->position.y + 75);
 
-            window.draw(*player.weapon->text);
+            window.draw(*player->weapon->text);
         }
     }
     if (check != 2) {
-        text->setString(to_string(player.hp));
-        text->setPosition(player.position.x - 140, player.position.y + 75);
+        text->setString(to_string(player->hp));
+        text->setPosition(player->position.x - 140, player->position.y + 75);
     } else {
         text->setCharacterSize(18);
         text->setString("You won! press R to restart");
-        text->setPosition(player.position.x - 100, player.position.y - 40);
+        text->setPosition(player->position.x - 100, player->position.y - 40);
     }
     window.draw(*text);
 }

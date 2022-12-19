@@ -21,6 +21,8 @@ public:
     Item *inventory[10];
     shared_ptr<Weapon> weapon;
     bool dead;
+    int walk_timer;
+    int walk_duration;
 
     Sprite sprite;
     Texture *texture;
@@ -48,6 +50,8 @@ public:
     Position get_position();
 
     int get_dirrection();
+
+    void move_with_direction(int dir);
 
 };
 

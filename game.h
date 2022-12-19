@@ -46,10 +46,10 @@ public:
     vector<unique_ptr<Enemy>> enemies;
     vector<shared_ptr<Item>> items;
     vector<shared_ptr<Weapon>> weapons;
+    unique_ptr<Unit> player;
     int enemy_amount;
     int item_amount;
     int weapon_amount;
-    Unit player;
     Item *clip;
     View view;
     vector<vector<Cell>> map;
@@ -61,6 +61,7 @@ public:
     Text *text;
     Texture *texture;
     Sprite sprite;
+
 public:
     Game();
 
@@ -78,7 +79,9 @@ public:
 
     void draw(RenderWindow &window);
 
-    void check_collision();
+    void check_collision(unique_ptr<Unit> &unit);
+
+    void check_enemy_collision(unique_ptr<Enemy> &unit);
 
     int get_type(int x, int y);
 
@@ -108,7 +111,7 @@ public:
 
     bool player_in_range(int number);
 
-    void enemy_walk();
+    void enemy_walk(int i);
 
 };
 
