@@ -5,6 +5,8 @@ set(CMAKE_CXX_STANDARD 17)
 
 add_subdirectory(Google_test)
 
+find_package(Doxygen)
+
 include_directories(Google_test/googletest/include)
 include_directories(Google_test/googlemock/include)
 

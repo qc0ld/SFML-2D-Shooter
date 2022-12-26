@@ -18,7 +18,6 @@ public:
     int hp;
     int size;
     int direction;
-    Item *inventory[10];
     shared_ptr<Weapon> weapon;
     bool dead;
     int walk_timer;

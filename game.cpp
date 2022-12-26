@@ -10,20 +10,20 @@ void create_map_sketch(vector<vector<char>> &my_map) {
     vector<vector<char>> map = {
             {'#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'},
             {'#', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
-            {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'E', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
-            {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
-            {'#', ' ', ' ', 'A', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', '#', ' ', ' ', '#', '#', '#', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
-            {'#', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
-            {'#', '#', ' ', ' ', ' ', '#', '#', '#', '#', ' ', ' ', '#', '#', '#', '#', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
+            {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'E', ' ', ' ', ' ', ' ', ' ', 'M', ' ', ' ', 'B', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
+            {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'A', ' ', ' ', ' ', '#'},
+            {'#', ' ', ' ', 'A', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'M', ' ', '#', '#', ' ', ' ', '#', '#', '#', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
+            {'#', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', 'A', ' ', ' ', ' ', '#', ' ', ' ', 'B', ' ', 'M', ' ', ' ', ' ', ' ', '#'},
+            {'#', '#', ' ', ' ', ' ', '#', '#', '#', '#', ' ', ' ', '#', '#', '#', '#', ' ', ' ', 'P', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
             {'#', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', '#', '#', '#', '#', '#', '#', ' ', ' ', '#', '#', '#'},
+            {'#', ' ', ' ', ' ', ' ', 'B', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
             {'#', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
-            {'#', ' ', ' ', ' ', ' ', ' ', '#', ' ', 'A', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
             {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'E', ' ', ' ', '#', '#', '#', '#', '#', '#', '#', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
             {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
-            {'#', ' ', ' ', 'E', ' ', ' ', ' ', ' ', 'P', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
+            {'#', ' ', ' ', 'E', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
             {'#', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
             {'#', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', 'E', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
-            {'#', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
+            {'#', ' ', 'M', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
             {'#', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
             {'#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'},
     };
@@ -45,7 +45,6 @@ Game::Game() : bullets(), enemies(), items(), weapons(), it(nullptr) {
     vector<vector<Cell>> a(height, vector<Cell>(width));
     map = a;
 
-    player->hp = 100000;
 
     for (int i = 0; i < height; ++i) {
         for (int k = 0; k < width; ++k) {
@@ -66,6 +65,12 @@ Game::Game() : bullets(), enemies(), items(), weapons(), it(nullptr) {
                 } else if (map_sketch[i][k] == 'A') {
                     weapons.push_back(make_shared<ak47>());
                     weapons[weapons.size() - 1]->set_position(i * 16, k * 16);
+                } else if (map_sketch[i][k] == 'M') {
+                    items.push_back(make_shared<Med_kit>());
+                    items[items.size() - 1]->set_position(i * 16, k * 16);
+                } else if (map_sketch[i][k] == 'B') {
+                    items.push_back(make_shared<Ammo_box>());
+                    items[items.size() - 1]->set_position(i * 16, k * 16);
                 }
             }
         }
@@ -76,11 +81,6 @@ Game::Game() : bullets(), enemies(), items(), weapons(), it(nullptr) {
     text->setCharacterSize(12);
     text->setFillColor(Color::Yellow);
 
-    texture = new Texture;
-    texture->loadFromFile("Textures/Map/Background.png");
-
-    sprite.setTexture(*texture);
-    sprite.setPosition(640, 360);
 }
 
 void Game::draw_map(RenderWindow &window) {
@@ -162,6 +162,23 @@ void Game::check_enemy_collision(unique_ptr<Enemy> &unit) {
     }
 }
 
+void Game::update_items() {
+    int x1 = player->position.x / 16;
+    int y1 = player->position.y / 16;
+    int x2, y2;
+
+    for (int i = 0; i < items.size(); i++) {
+        x2 = items[i]->position.x / 16;
+        y2 = items[i]->position.y / 16;
+        if (x1 == x2 && y1 == y2) {
+            items[i]->use(player);
+            if (items[i]->check == 1) {
+                items.erase(items.begin() + i);
+            }
+        }
+    }
+}
+
 
 void Game::check_collision(unique_ptr<Unit> &unit) {
     int x = unit->position.x / 16;
@@ -231,16 +248,16 @@ void Game::update_bullets() {
     int x, y, x1, y1;
     it = bullets.begin();
     while (it != bullets.end()) {
-        x = it.value().position.x / 16;
-        y = it.value().position.y / 16;
-        it.value().move_x(sin(it.value().angle) * it.value().speed);
-        it.value().move_y(cos(it.value().angle) * it.value().speed);
+        x = it->position.x / 16;
+        y = it->position.y / 16;
+        it->move_x(sin(it->angle) * it->speed);
+        it->move_y(cos(it->angle) * it->speed);
         if (map[x][y].get_type() == WALL) {
             bullets.erase(it);
         } else if (map[x][y].get_type() == ENEMY) {
-            if (it.value().from != ENEMY) {
-                if (get_enemy(it.value().position.x, it.value().position.y) != 228) {
-                    enemies[get_enemy(it.value().position.x, it.value().position.y)]->get_damage(it.value().damage);
+            if (it->from != ENEMY) {
+                if (get_enemy(it->position.x, it->position.y) != 228) {
+                    enemies[get_enemy(it->position.x, it->position.y)]->get_damage(it->damage);
                     bullets.erase(it);
                 }
             }
@@ -248,8 +265,8 @@ void Game::update_bullets() {
             x1 = player->position.x / 16;
             y1 = player->position.y / 16;
             if (x == x1 && y == y1) {
-                if (it.value().from != PLAYER) {
-                    player->get_damage(it.value().damage);
+                if (it->from != PLAYER) {
+                    player->get_damage(it->damage);
                     bullets.erase(it);
                 }
             }
@@ -358,6 +375,8 @@ void Game::update() {
 
     update_bullets();
 
+    update_items();
+
     update_weapons();
 
     check_game();
@@ -400,21 +419,22 @@ bool Game::player_in_range(int number) {
 }
 
 void Game::draw(RenderWindow &window) {
-
+    int i = 0;
     draw_map(window);
     player->draw(window);
-    for (int i = 0; i < enemies.size(); i++) {
+    for (i = 0; i < enemies.size(); i++) {
         enemies[i]->draw(window);
     }
-    for (int i = 0; i < weapons.size(); i++) {
+    for (i = 0; i < weapons.size(); i++) {
         weapons[i]->draw(window);
     }
+    for (i = 0; i < items.size(); i++) {
+        items[i]->draw(window);
+    }
     for (it = bullets.begin(); it != bullets.end(); ++it) {
-        it.value().draw(window);
+        it->draw(window);
     }
     interface(window);
-    sprite.setPosition(640, 360);
-    window.draw(sprite);
     window.display();
 }
 
@@ -461,6 +481,9 @@ void Game::restart() {
     for (int i = weapons.size() - 1; i > -1; i--) {
         weapons.erase(weapons.begin() + i);
     }
+    for (int i = items.size() - 1; i > -1; i--) {
+        items.erase(items.begin() + i);
+    }
     for (int i = 0; i < height; ++i) {
         for (int k = 0; k < width; ++k) {
             if (map_sketch[i][k] == '#') {
@@ -472,7 +495,6 @@ void Game::restart() {
                 weapons.push_back(make_shared<ak47>());
                 enemies[enemies.size() - 1]->set_position(i * 16, k * 16);
                 enemies[enemies.size() - 1]->set_weapon(weapons[weapons.size() - 1]);
-                enemy_amount++;
             } else if (map_sketch[i][k] == 'P') {
                 player->set_position(i * 16, k * 16);
                 player->dead = 0;
@@ -481,6 +503,12 @@ void Game::restart() {
             } else if (map_sketch[i][k] == 'A') {
                 weapons.push_back(make_shared<ak47>());
                 weapons[weapons.size() - 1]->set_position(i * 16, k * 16);
+            } else if (map_sketch[i][k] == 'M') {
+                items.push_back(make_shared<Med_kit>());
+                items[items.size() - 1]->set_position(i * 16, k * 16);
+            } else if (map_sketch[i][k] == 'B') {
+                items.push_back(make_shared<Ammo_box>());
+                items[items.size() - 1]->set_position(i * 16, k * 16);
             }
         }
     }

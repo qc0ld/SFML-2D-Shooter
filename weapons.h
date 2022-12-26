@@ -37,25 +37,32 @@ public:
 };
 
 
-
-class Weapon : public Item {
+class Weapon {
 public:
+    Position position;
     stack<Bullet> clip;
+    int check;
     int size;
     int max_size;
     double damage;
     int reload_timer;
     int reload_duration;
     bool shot;
+    Texture *texture;
+    Sprite sprite;
     Text *text;
     Font font;
 public:
+
+    void set_position(double x, double y);
+
+    void draw(RenderWindow &window);
 
     virtual void attack(RenderWindow &window, double x, double y) = 0;
 
     virtual void enemy_attack(double player_x, double player_y, double x, double y) = 0;
 
-    int type() override { return WEAPON; }
+    int type() { return WEAPON; }
 
 };
 

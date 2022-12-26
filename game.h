@@ -47,9 +47,6 @@ public:
     vector<shared_ptr<Item>> items;
     vector<shared_ptr<Weapon>> weapons;
     unique_ptr<Unit> player;
-    int enemy_amount;
-    int item_amount;
-    int weapon_amount;
     Item *clip;
     View view;
     vector<vector<Cell>> map;
@@ -58,8 +55,6 @@ public:
     my::list<Bullet>::iterator it;
     Font font;
     Text *text;
-    Texture *texture;
-    Sprite sprite;
 
 public:
     Game();
@@ -111,6 +106,8 @@ public:
     bool player_in_range(int number);
 
     void enemy_walk(int i);
+
+    void update_items();
 
 };
 

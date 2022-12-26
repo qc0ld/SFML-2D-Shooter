@@ -52,42 +52,40 @@ TEST(Bullet, moving) {
 
 TEST(Game, moving) {
     Game game;
-    EXPECT_EQ(game.player->position.x, 192);
-    EXPECT_EQ(game.player->position.y, 128);
+    EXPECT_EQ(game.player->position.x, 96);
+    EXPECT_EQ(game.player->position.y, 272);
     //вправо
     for (int i = 0; i < 100; i++){
         game.update_player(3);
     }
-    EXPECT_DOUBLE_EQ(game.player->position.x, 211.99969482421875);
-    EXPECT_DOUBLE_EQ(game.player->position.y, 128);
+    EXPECT_DOUBLE_EQ(game.player->position.x, 115.99969482421875);
+    EXPECT_DOUBLE_EQ(game.player->position.y, 272);
     //влево
     for (int i = 0; i < 100; i++){
         game.update_player(1);
     }
-    EXPECT_DOUBLE_EQ(game.player->position.x, 192);
-    EXPECT_DOUBLE_EQ(game.player->position.y, 128);
+    EXPECT_DOUBLE_EQ(game.player->position.x, 96);
+    EXPECT_DOUBLE_EQ(game.player->position.y, 272);
     //наверх
     for (int i = 0; i < 100; i++){
         game.update_player(2);
     }
-    EXPECT_DOUBLE_EQ(game.player->position.x, 192);
-    EXPECT_DOUBLE_EQ(game.player->position.y, 108.00030517578125);
+    EXPECT_DOUBLE_EQ(game.player->position.x, 96);
+    EXPECT_DOUBLE_EQ(game.player->position.y, 251.99909973144531);
     //вниз
     for (int i = 0; i < 100; i++){
         game.update_player(4);
     }
-    EXPECT_DOUBLE_EQ(game.player->position.x, 192);
-    EXPECT_DOUBLE_EQ(game.player->position.y, 128);
+    EXPECT_DOUBLE_EQ(game.player->position.x, 96);
+    EXPECT_DOUBLE_EQ(game.player->position.y, 272);
 }
 
 TEST(Game, take_damage){
     Game game;
     game.update();
     EXPECT_EQ(game.player->hp, 100);
-    for (int i = 0; i < 40; i++){
-        game.enemies_attack();
-        game.update();
-    }
+    Bullet bullet;
+    game.player->get_damage(bullet.damage);
     EXPECT_EQ(game.player->hp, 67);
 }
 
@@ -99,7 +97,7 @@ TEST(Game, shooting) {
     game.player->set_weapon(game.weapons[game.weapons.size() - 1]);
     EXPECT_EQ(game.player->weapon->check, 1);
     EXPECT_EQ(game.player->weapon->shot, false);
-    RenderWindow window(VideoMode(1280, 720), "Game");
+    RenderWindow window(VideoMode(1, 1), "1");
     game.player_attack(window);
     EXPECT_EQ(game.player->weapon->shot, true);
 
@@ -127,7 +125,7 @@ TEST(Game, check_game) {
         game.enemies[game.enemies.size() - 1]->get_damage(100);
         game.update_enemies();
     }
-    //все противники мертвы
+    //все противники мертвы, игра выиграна
     game.check_game();
     EXPECT_EQ(game.check, 2);
 }

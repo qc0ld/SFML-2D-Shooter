@@ -3,6 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 #include "cmath"
+#include "memory"
 
 
 enum {
@@ -20,6 +21,7 @@ struct Position {
     float y;
 };
 
+class Unit;
 
 using namespace std;
 using namespace sf;
@@ -32,35 +34,35 @@ public:
     Texture *texture;
 public:
 
+    Item();
+
     void set_position(double x, double y);
 
     void draw(RenderWindow &window);
 
-  //  virtual void update(vector<vector<Cell>> &map) = 0;
-
     virtual int type() { return ITEM; }
+
+    virtual void use(unique_ptr<Unit> &unit) = 0;
 
     ~Item();
 };
 
-/*class Clip : public Item {
-private:
-    int clip_capacity;
-    int size;
+class Ammo_box : public Item {
 public:
-    Clip() {}
+    Ammo_box();
 
-    void update(std::vector<std::vector<Cell>> &map) override {}
+    void use(unique_ptr<Unit> &unit) override;
 
-};*/
 
-/*
-class first_aid_kit : public Item {
+};
+
+
+class Med_kit : public Item {
 public:
-    first_aid_kit();
+    Med_kit();
 
-    void use_first_aid_kit();
-};*/
+    void use(unique_ptr<Unit> &unit) override;
+};
 
 
 #endif //ITEMS_H

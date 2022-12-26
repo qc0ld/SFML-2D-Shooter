@@ -4,12 +4,10 @@
 using namespace sf;
 
 int main() {
-    int number = 0;
-    if (number == 1) {
-        gtest_main();
-        return 0;
-    }
+    gtest_main();
+
     srand(time(NULL));
+
     RenderWindow window(VideoMode(1280, 720), "Game");
     Event event;
     Game game;
@@ -39,7 +37,7 @@ int main() {
         if (Keyboard::isKeyPressed(Keyboard::G)) {
             game.drop_weapon();
         }
-        if (game.check == 2){
+        if (game.check == 2) {
             if (Keyboard::isKeyPressed(Keyboard::R)) {
                 game.restart();
             }

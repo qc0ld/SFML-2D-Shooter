@@ -91,3 +91,14 @@ void Bullet::move_y(double y) {
     position.y = position.y + y;
 }
 
+void Weapon::set_position(double x, double y) {
+    position.x = x;
+    position.y = y;
+}
+
+
+void Weapon::draw(RenderWindow &window) {
+    sprite.setPosition(position.x, position.y);
+    window.draw(sprite);
+}
+
