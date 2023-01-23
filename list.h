@@ -1,7 +1,14 @@
 #ifndef LIST_H
 #define LIST_H
 
+#include "Unit.h"
+
+#include <functional>
+#include <utility>
+
+using namespace std;
 namespace my {
+
     template<typename T>
     class list {
     private:
@@ -55,7 +62,7 @@ namespace my {
             }
 
             const T &operator*() {
-                return node_ptr->value;
+                return *node_ptr->value;
             }
 
             bool operator!=(const const_iterator &const_iterator) const {
@@ -101,8 +108,8 @@ namespace my {
                 return &node_ptr->value;
             }
 
-            Node operator*() {
-                return *node_ptr;
+            T *operator*() {
+                return &node_ptr->value;
             }
 
             bool operator!=(const iterator &iterator) const {
@@ -144,9 +151,6 @@ namespace my {
         }
 
         list(list &&_list) {
-            head = new Node;
-            tail = new Node;
-
             head = _list.head;
             tail = _list.tail;
 
@@ -177,6 +181,9 @@ namespace my {
                     this->pop_back();
                 }
 
+                delete head;
+                delete tail;
+
                 head = list.head;
                 tail = list.tail;
 
@@ -184,6 +191,7 @@ namespace my {
 
                 list.head = nullptr;
                 list.tail = nullptr;
+
                 list.node_size = 0;
 
                 std::cout << "Overloaded operator = (move assigment) was called " << std::endl;
@@ -205,8 +213,6 @@ namespace my {
             }
 
             node_size = 0;
-
-            std::cout << "Dustructor was called" << std::endl;
         }
 
         bool empty() {
@@ -325,7 +331,51 @@ namespace my {
             --node_size;
 
         }
+
+        int countDistinct(int arr[], int n) {
+            int res = 1;
+
+            // Pick all elements one by one
+            for (int i = 1; i < n; i++) {
+                int j = 0;
+                for (j = 0; j < i; j++)
+                    if (arr[i] == arr[j])
+                        break;
+
+                // If not printed earlier, then print it
+                if (i == j)
+                    res++;
+            }
+            return res;
+        }
+
+    public:
+        template<typename K>
+        list<pair<K, list<T>>> groupby(function<K(const T &)> func) const {
+            list<pair<K, list<T>>> pair_list;
+            for (auto it = this->begin(); it != this->end(); ++it) {
+                auto itr = this->begin();
+                for (itr = this->begin(); itr != it; ++itr) {
+                    if (func(it.value()) == func(itr.value())) {
+                        break;
+                    }
+                }
+                if (itr == it) {
+                    list<T> list;
+                    pair_list.push_back(make_pair(func(it.value()), list));
+                }
+            }
+            for (auto it = this->begin(); it != this->end(); ++it) {
+                for (auto itr = pair_list.begin(); itr != pair_list.end(); ++itr) {
+                    if (func(it.value()) == itr->first) {
+                        itr->second.push_back(it.value());
+                    }
+                }
+
+            }
+            return pair_list;
+        }
     };
 }
 
-#endif //LIST_H
+#endif
